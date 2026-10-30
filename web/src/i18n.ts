@@ -4,6 +4,11 @@ import zh from './locales/zh-Hans.json'
 import en from './locales/en.json'
 import ja from './locales/ja.json'
 import ko from './locales/ko.json'
+// The site's own keys and overrides: every site keeps them in src/locales/.
+import siteZh from '@/locales/zh-Hans.json'
+import siteEn from '@/locales/en.json'
+import siteJa from '@/locales/ja.json'
+import siteKo from '@/locales/ko.json'
 
 export const languageNames = {
   'zh-Hans': '简体中文',
@@ -39,8 +44,7 @@ export function browserLanguage(): Language {
 
 // Start with the browser language; LanguageProvider applies the SSO preference
 // once the session is available. No separate preference is stored locally.
-// These are the text both sites share; each site adds its own keys and overrides
-// with addSiteCatalogues before it renders.
+// The text both sites share, then the site's keys; a site's text wins where both have a key.
 export const i18n = i18next.createInstance()
 void i18n.use(initReactI18next).init({
   resources: {
@@ -58,11 +62,8 @@ void i18n.use(initReactI18next).init({
   returnNull: false,
   returnEmptyString: false,
 })
+const site: Record<Language, object> = { 'zh-Hans': siteZh, en: siteEn, ja: siteJa, ko: siteKo }
+for (const [language, catalogue] of Object.entries(site))
+  i18n.addResourceBundle(language, 'translation', catalogue, true, true)
 // Utilities translate at call time; React components use useTranslation instead.
 export const t = i18n.t.bind(i18n)
-
-/** Adds a site's keys to the shared ones; a site's text wins where both have a key. */
-export function addSiteCatalogues(site: Record<Language, object>) {
-  for (const [language, catalogue] of Object.entries(site))
-    i18n.addResourceBundle(language, 'translation', catalogue, true, true)
-}
