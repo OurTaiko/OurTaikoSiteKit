@@ -1,4 +1,3 @@
-import { createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -14,6 +13,7 @@ import { cn } from '../lib/utils'
 import { Badge } from './ui/badge'
 import { Card, CardContent } from './ui/card'
 import { DifficultyBadges } from './difficulty-badges'
+import { useSite } from '../site'
 import { compactNumber } from './vote-control'
 import { CardCoverBackdrop, coveredTextClassName, useCardCover } from './card-cover'
 
@@ -194,12 +194,7 @@ export function CommentCountBadge({ count }: { count: number }) {
   )
 }
 
-// The site's own card, rows filled, for the shared pages that list charts. A site renders
-// its ChartCard here once (SiteChartCardProvider in main.tsx).
-const SiteChartCardContext = createContext<((chart: ChartBase) => ReactNode) | null>(null)
-export const SiteChartCardProvider = SiteChartCardContext.Provider
+// The site's own card, rows filled (Site.chartCard), for the shared pages that list charts.
 export function SiteChartCard({ chart }: { chart: ChartBase }) {
-  const render = useContext(SiteChartCardContext)
-  if (!render) throw new Error('SiteChartCardProvider missing')
-  return render(chart)
+  return useSite().chartCard(chart)
 }

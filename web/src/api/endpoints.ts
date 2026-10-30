@@ -58,6 +58,8 @@ export const endpoints = {
     `${API_ROOT}/me/notifications/${encodeURIComponent(id)}/respond`,
   chartFiles: (id: string) => `${chartPath(id)}/files`,
   chartFilesPreview: (id: string) => `${chartPath(id)}/files/preview`,
+  /** The stored files' manifest: direct links, sizes and SHA-256. */
+  resources: (id: string) => `${chartPath(id)}/resources`,
   cover: (id: string, hash?: string) =>
     withQuery(`${chartPath(id)}/cover`, hash ? { v: hash } : {}),
   leaderboard: (id: string, query: { difficultyId?: number; page: number }) =>
