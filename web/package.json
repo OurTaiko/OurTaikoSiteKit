@@ -1,0 +1,26 @@
+{
+  "name": "@ourtaiko/sitekit",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Source shared by the Fanmade and OurTaikoDatabase websites; each site's Vite compiles it through the @sitekit alias.",
+  "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "@codemirror/commands": "6.8.1",
+    "@codemirror/language": "6.11.2",
+    "@codemirror/state": "6.5.2",
+    "@codemirror/view": "6.38.1",
+    "@lezer/highlight": "1.2.1",
+    "@phosphor-icons/react": "^2.1.10",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.3.2",
+    "i18next": "^26.4.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-i18next": "^17.0.15"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "vitest": "^4.1.0"
+  }
+}
