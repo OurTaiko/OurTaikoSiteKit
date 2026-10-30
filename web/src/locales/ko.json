@@ -167,7 +167,6 @@
     "audioIsNotAValidOggFileCheckItsFormat": "유효한 Ogg 파일이 아닙니다. 실제 형식을 확인하세요.",
     "audioIsNotAValidMp3FileCheckTheFormatRenamingThe": "유효한 MP3 파일이 아닙니다. 확장자만 바꾸지 말고 실제 형식을 확인하세요.",
     "tjaMustNotBeEmptyOrExceed2Mib": "TJA는 비어 있으면 안 되며 2 MiB 이하여야 합니다",
-    "unsupportedTextEncoding": "지원하지 않는 텍스트 인코딩입니다",
     "cannotDecodeTextSaveAsUtf8AndSelectAgain": "텍스트를 해독할 수 없습니다. UTF-8로 저장한 후 다시 선택하세요.",
     "textContainsUnrecognizedCharacters": "텍스트에 인식할 수 없는 문자가 있습니다",
     "aLineExceeds64Kib": "한 줄이 64 KiB를 초과합니다",

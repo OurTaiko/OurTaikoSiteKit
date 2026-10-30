@@ -167,7 +167,6 @@
     "audioIsNotAValidOggFileCheckItsFormat": "有効な Ogg 音声ではありません。形式を確認してください。",
     "audioIsNotAValidMp3FileCheckTheFormatRenamingThe": "有効な MP3 音声ではありません。拡張子だけでなく実際の形式を確認してください。",
     "tjaMustNotBeEmptyOrExceed2Mib": "TJA は空でない 2 MiB 以下のファイルにしてください",
-    "unsupportedTextEncoding": "未対応の文字コードです",
     "cannotDecodeTextSaveAsUtf8AndSelectAgain": "文字を読み取れません。UTF-8 で保存し直して選択してください。",
     "textContainsUnrecognizedCharacters": "認識できない文字が含まれています",
     "aLineExceeds64Kib": "1 行が 64 KiB を超えています",

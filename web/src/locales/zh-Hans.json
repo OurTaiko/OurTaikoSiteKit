@@ -167,7 +167,6 @@
     "audioIsNotAValidOggFileCheckItsFormat": "音频不是有效 Ogg 文件，请检查实际格式",
     "audioIsNotAValidMp3FileCheckTheFormatRenamingThe": "音频不是有效 MP3 文件，请检查实际格式，不要只修改扩展名",
     "tjaMustNotBeEmptyOrExceed2Mib": "TJA 不能为空且不能超过 2 MiB",
-    "unsupportedTextEncoding": "不支持此文本编码",
     "cannotDecodeTextSaveAsUtf8AndSelectAgain": "无法解码文本，请转存为 UTF-8 后重新选择",
     "textContainsUnrecognizedCharacters": "文本包含无法识别的字符",
     "aLineExceeds64Kib": "单行内容超过 64 KiB",

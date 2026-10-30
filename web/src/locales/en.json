@@ -167,7 +167,6 @@
     "audioIsNotAValidOggFileCheckItsFormat": "Audio is not a valid Ogg file. Check its format.",
     "audioIsNotAValidMp3FileCheckTheFormatRenamingThe": "Audio is not a valid MP3 file. Check the format; renaming the extension is not enough.",
     "tjaMustNotBeEmptyOrExceed2Mib": "TJA must not be empty or exceed 2 MiB",
-    "unsupportedTextEncoding": "Unsupported text encoding",
     "cannotDecodeTextSaveAsUtf8AndSelectAgain": "Cannot decode text. Save as UTF-8 and select again.",
     "textContainsUnrecognizedCharacters": "Text contains unrecognized characters",
     "aLineExceeds64Kib": "A line exceeds 64 KiB",
