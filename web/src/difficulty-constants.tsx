@@ -11,7 +11,7 @@ import type { Difficulty, DifficultyConstants as Constants } from './api/types'
 // branching block shows its master route first and can switch to the others.
 
 const maxValue = 15.5
-const dimensions = ['stamina', 'handspeed', 'burst', 'complex', 'rhythm'] as const
+const dimensions = ['stamina', 'handspeed', 'burst', 'rhythm', 'complex'] as const
 type Dimension = (typeof dimensions)[number]
 
 const format = (value: number) => value.toFixed(1)
