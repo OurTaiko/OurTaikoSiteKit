@@ -30,6 +30,12 @@ export const sides: Side[] = ['single', 'p1', 'p2']
 export function slotKey(d: { course: string; side?: string }): string {
   return d.course + (d.side === 'p1' ? '_1p' : d.side === 'p2' ? '_2p' : '')
 }
+/** The course and side a slot key names: slotKey's inverse. */
+export function slotFromKey(key: string): { course: string; side: Side } {
+  const course = baseCourse(key)
+  const suffix = key.slice(course.length)
+  return { course, side: suffix === '_1p' ? 'p1' : suffix === '_2p' ? 'p2' : 'single' }
+}
 export function baseCourse(key: string): BaseCourse {
   return key.replace(/_[12]p$/, '') as BaseCourse
 }

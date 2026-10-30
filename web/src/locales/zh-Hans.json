@@ -394,7 +394,10 @@
     "noFiles": "暂无文件",
     "noFilesText": "这首乐曲已登记，但还没有上传 TJA 与音频。",
     "noFilesManagerText": "这首乐曲已登记，但还没有上传 TJA 与音频。上传后，曲名、副标题、BPM 和难度将以 TJA 为准。",
-    "uploadChartFiles": "上传谱面文件"
+    "uploadChartFiles": "上传谱面文件",
+    "chartsNav": "发现谱面",
+    "nijiiroId": "Nijiiro ID",
+    "officialId": "官方 ID"
   },
   "common": {
     "playerCount_other": "{{count}} 位玩家",

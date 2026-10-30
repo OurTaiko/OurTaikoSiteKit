@@ -394,7 +394,10 @@
     "noFiles": "ファイル未登録",
     "noFilesText": "この曲は登録済みですが、TJA と音源はまだアップロードされていません。",
     "noFilesManagerText": "この曲は登録済みですが、TJA と音源はまだアップロードされていません。アップロード後は曲名、サブタイトル、BPM、難易度が TJA に従います。",
-    "uploadChartFiles": "譜面ファイルをアップロード"
+    "uploadChartFiles": "譜面ファイルをアップロード",
+    "chartsNav": "譜面を探す",
+    "nijiiroId": "Nijiiro ID",
+    "officialId": "公式 ID"
   },
   "common": {
     "playerCount_other": "{{count}} 人のプレイヤー",

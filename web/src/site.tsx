@@ -3,11 +3,15 @@
 // object in main.tsx (SiteProvider); its Chart is a ChartBase here, so it casts back.
 import { createContext, useContext } from 'react'
 import type { ComponentType, ReactNode } from 'react'
-import type { ChartBase } from './api/types'
+import type { ChartBase, UserBase } from './api/types'
 
 export type ActivityTab = 'image' | 'preview' | 'leaderboard'
 
 export type Site = {
+  /** The name after "OurTaiko" in the header: Fanmade or Database. */
+  brand: string
+  /** Who sees the chart manager: anyone (Fanmade) or administrators (Database). */
+  canUpload: (user: UserBase | null) => boolean
   /** The site's chart card with its rows filled. */
   chartCard: (chart: ChartBase) => ReactNode
   /** The list's orders (besides the default, '') and their names. */

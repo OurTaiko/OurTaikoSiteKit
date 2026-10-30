@@ -394,7 +394,10 @@
     "noFiles": "파일 없음",
     "noFilesText": "이 곡은 등록되었지만 TJA와 음원이 아직 업로드되지 않았습니다.",
     "noFilesManagerText": "이 곡은 등록되었지만 TJA와 음원이 아직 업로드되지 않았습니다. 업로드하면 곡명, 부제, BPM, 난이도는 TJA를 따릅니다.",
-    "uploadChartFiles": "채보 파일 업로드"
+    "uploadChartFiles": "채보 파일 업로드",
+    "chartsNav": "채보 둘러보기",
+    "nijiiroId": "Nijiiro ID",
+    "officialId": "공식 ID"
   },
   "common": {
     "playerCount_other": "플레이어 {{count}}명",

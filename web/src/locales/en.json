@@ -394,7 +394,10 @@
     "noFiles": "No files yet",
     "noFilesText": "This song is registered, but its TJA and audio have not been uploaded yet.",
     "noFilesManagerText": "This song is registered, but its TJA and audio have not been uploaded yet. Once uploaded, the title, subtitle, BPM and difficulties come from the TJA.",
-    "uploadChartFiles": "Upload chart files"
+    "uploadChartFiles": "Upload chart files",
+    "chartsNav": "Explore charts",
+    "nijiiroId": "Nijiiro ID",
+    "officialId": "Official ID"
   },
   "common": {
     "playerCount_other": "{{count}} players",

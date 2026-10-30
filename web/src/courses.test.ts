@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 import { i18n } from './i18n'
-import { blockName, groupCourses, parseTjaCourse } from './courses'
+import { blockName, groupCourses, parseTjaCourse, slotFromKey, slotKey } from './courses'
 
 it('names a block from the block or its slot key', async () => {
   await i18n.changeLanguage('en')
@@ -29,4 +29,9 @@ it('orders course groups from Easy to Ura', () => {
     'Oni',
     'Edit',
   ])
+})
+
+it('reads a slot key back into its course and side', () => {
+  for (const side of ['single', 'p1', 'p2'] as const)
+    expect(slotFromKey(slotKey({ course: 'Edit', side }))).toEqual({ course: 'Edit', side })
 })
