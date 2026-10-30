@@ -359,8 +359,6 @@
     "invalidChartStyle": "STYLE 必须为 Single 或 Double，且位于谱面块外",
     "courseCreator": "{{difficulty}} 制作者",
     "bestScoresTiesShareRanks": "个人最高分 · 同分并列",
-    "leaderboardUnavailable": "排行榜不可用",
-    "serverDoesNotSupportLeaderboard": "服务器不支持此难度的排行榜。",
     "previewRange": "试听范围",
     "previewStartSeconds": "试听开始（秒）",
     "previewEndSeconds": "试听结束（秒）",

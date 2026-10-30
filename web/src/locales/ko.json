@@ -359,8 +359,6 @@
     "invalidChartStyle": "STYLE은 채보 블록 밖에서 Single 또는 Double로 지정하세요",
     "courseCreator": "{{difficulty}} 제작자",
     "bestScoresTiesShareRanks": "개인 최고 점수 · 동점은 공동 순위",
-    "leaderboardUnavailable": "순위표를 사용할 수 없습니다",
-    "serverDoesNotSupportLeaderboard": "서버가 이 난이도의 순위표를 지원하지 않습니다.",
     "previewRange": "미리 듣기 구간",
     "previewStartSeconds": "시작 지점(초)",
     "previewEndSeconds": "종료 지점(초)",

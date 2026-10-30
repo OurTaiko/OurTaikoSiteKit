@@ -359,8 +359,6 @@
     "invalidChartStyle": "STYLE は譜面外で Single または Double を指定してください",
     "courseCreator": "{{difficulty}} の譜面制作者",
     "bestScoresTiesShareRanks": "自己ベスト · 同点は同順位",
-    "leaderboardUnavailable": "ランキングを利用できません",
-    "serverDoesNotSupportLeaderboard": "この難易度のランキングはサーバーで対応していません。",
     "previewRange": "試聴範囲",
     "previewStartSeconds": "試聴開始（秒）",
     "previewEndSeconds": "試聴終了（秒）",

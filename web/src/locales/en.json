@@ -359,8 +359,6 @@
     "invalidChartStyle": "STYLE must be Single or Double and outside chart blocks",
     "courseCreator": "{{difficulty}} creator",
     "bestScoresTiesShareRanks": "Personal best scores · Ties share ranks",
-    "leaderboardUnavailable": "Leaderboard unavailable",
-    "serverDoesNotSupportLeaderboard": "The server does not support a leaderboard for this difficulty.",
     "previewRange": "Preview range",
     "previewStartSeconds": "Preview start (seconds)",
     "previewEndSeconds": "Preview end (seconds)",
