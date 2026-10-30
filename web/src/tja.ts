@@ -299,12 +299,28 @@ export function parseTja(data: Uint8Array, audioName: string): Metadata {
   return m
 }
 export type PreparedTja = Metadata & { file: File; sourceEncoding: string }
-export async function prepareTja(tja: File, audioName: string): Promise<PreparedTja> {
-  if (!safeFilename(tja.name) || !/\.tja$/i.test(tja.name) || !isAudioFilename(audioName))
+/**
+ * Converts a chosen TJA to UTF-8 and checks it. audioName is the chosen audio, which WAVE must
+ * name; it is '' when a replacement keeps the stored audio, whose name (keptAudio) then only
+ * helps tell encodings apart, as the server does not match WAVE against a kept file.
+ */
+export async function prepareTja(
+  tja: File,
+  audioName: string,
+  keptAudio = '',
+): Promise<PreparedTja> {
+  if (
+    !safeFilename(tja.name) ||
+    !/\.tja$/i.test(tja.name) ||
+    (audioName && !isAudioFilename(audioName))
+  )
     fail('UPLOAD_FILES_INVALID', t('messages.selectOneTjaChartAndOneOggOrMp3AudioFile'))
   if (!tja.size || tja.size > maxTja)
     fail('FILE_SIZE_INVALID', t('messages.filesMustNotBeEmptyTjaUpTo2MibAudioUp'))
-  const normalized = await normalizeTja(new Uint8Array(await tja.arrayBuffer()), audioName)
+  const normalized = await normalizeTja(
+    new Uint8Array(await tja.arrayBuffer()),
+    audioName || keptAudio,
+  )
   const metadata = parseTja(normalized.data, audioName)
   return {
     ...metadata,

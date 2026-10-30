@@ -5,8 +5,6 @@ import { createContext, useContext } from 'react'
 import type { ComponentType, ReactNode } from 'react'
 import type { ChartBase, UserBase } from './api/types'
 
-export type ActivityTab = 'image' | 'preview' | 'leaderboard'
-
 export type Site = {
   /** The name after "OurTaiko" in the header: Fanmade or Database. */
   brand: string
@@ -28,14 +26,6 @@ export type Site = {
   }) => ReactNode
   /** The site's list filters besides the shared ones, from the address ('' for none). */
   readExtraFilters?: (params: URLSearchParams) => Record<string, string>
-  /** The chart page's image, player and leaderboard. */
-  ChartActivity: ComponentType<{
-    chart: ChartBase
-    tab: ActivityTab
-    onTabChange: (tab: ActivityTab) => void
-    course: string
-    onCourseChange: (course: string) => void
-  }>
   /** The chart information dialog. */
   EditMetadata: ComponentType<{
     chart: ChartBase

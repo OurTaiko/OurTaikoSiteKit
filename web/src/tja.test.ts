@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import cases from '../../contracts/validation.json'
-import { maxMovie, parseTja, validateMovie, ValidationError } from './tja'
+import { maxMovie, parseTja, prepareTja, validateMovie, ValidationError } from './tja'
 
 describe('shared TJA upload contract', () => {
   for (const c of cases)
@@ -110,4 +110,13 @@ it('reads headers in any case, and a repeated one as the game does: the last', (
     'a.ogg',
   )
   expect([m.title, m.bpm, m.wave, m.difficulties[0].maker]).toEqual(['Last', 150, 'a.ogg', 'B'])
+})
+
+it('does not match WAVE against an audio file a replacement keeps', async () => {
+  const tja = new File(
+    ['TITLE:K\nBPM:120\nWAVE:new.ogg\nCOURSE:Oni\nLEVEL:5\n#START\n1000,\n#END\n'],
+    'k.tja',
+  )
+  expect((await prepareTja(tja, '', 'stored.ogg')).wave).toBe('new.ogg')
+  await expect(prepareTja(tja, 'other.ogg')).rejects.toThrow(ValidationError)
 })

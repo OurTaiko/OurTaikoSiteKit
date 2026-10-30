@@ -36,7 +36,8 @@ import { defaultDifficulty, hasConstants } from './chart-difficulty'
 import { DifficultyConstants } from './difficulty-constants'
 import { useSession } from './session-context'
 import { useSite } from './site'
-import type { ActivityTab } from './site'
+import { ChartActivity } from './chart-activity'
+import type { ActivityTab } from './chart-activity'
 import { Modal, Notice } from './notifications'
 import { useNotification } from './notification-context'
 import { CategoryLabels } from './categories'
@@ -293,7 +294,7 @@ type PageTab = 'info' | 'chart' | 'leaderboard' | 'comments'
 
 export function Detail() {
   const { t } = useTranslation()
-  const { ChartActivity, EditMetadata, chartStats, chartRecord } = useSite()
+  const { EditMetadata, chartStats, chartRecord } = useSite()
   const { notify } = useNotification()
   const { id, commentId } = useParams(),
     session = useSession(),
