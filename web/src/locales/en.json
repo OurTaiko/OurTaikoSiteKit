@@ -387,7 +387,9 @@
     "anyCourse": "Any difficulty",
     "filterLevel": "Star level",
     "anyLevel": "Any star level",
-    "allCategories": "All"
+    "allCategories": "All",
+    "hasDouble": "Has separate 1P/2P charts",
+    "hasBranching": "Includes branching charts"
   },
   "common": {
     "playerCount_other": "{{count}} players",
@@ -655,6 +657,14 @@
       "daily": {
         "name": "Daily Challenge",
         "description": "Ten songs drawn at random every day."
+      },
+      "liked": {
+        "name": "Liked Songs",
+        "description": "Songs you upvoted, newest first."
+      },
+      "acclaimed": {
+        "name": "Recently Acclaimed",
+        "description": "The 20 best rated songs uploaded in the last 30 days."
       }
     },
     "addSongs": "Add songs",

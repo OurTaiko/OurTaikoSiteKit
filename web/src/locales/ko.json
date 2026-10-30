@@ -387,7 +387,9 @@
     "anyCourse": "모든 난이도",
     "filterLevel": "별 수",
     "anyLevel": "모든 별 수",
-    "allCategories": "전체"
+    "allCategories": "전체",
+    "hasDouble": "1P/2P 별도 채보 포함",
+    "hasBranching": "분기 채보 포함"
   },
   "common": {
     "playerCount_other": "플레이어 {{count}}명",
@@ -644,6 +646,14 @@
       "daily": {
         "name": "오늘의 과제",
         "description": "매일 무작위로 뽑는 10곡."
+      },
+      "liked": {
+        "name": "내가 추천한 곡",
+        "description": "추천한 곡을 최신순으로 보여 줍니다."
+      },
+      "acclaimed": {
+        "name": "최근 호평",
+        "description": "최근 30일 동안 업로드된 곡 중 평가가 높은 20곡."
       }
     },
     "addSongs": "곡 추가",

@@ -387,7 +387,9 @@
     "anyCourse": "すべての難易度",
     "filterLevel": "★",
     "anyLevel": "すべての★",
-    "allCategories": "すべて"
+    "allCategories": "すべて",
+    "hasDouble": "1P／2P 別譜面あり",
+    "hasBranching": "譜面分岐あり"
   },
   "common": {
     "playerCount_other": "{{count}} 人のプレイヤー",
@@ -644,6 +646,14 @@
       "daily": {
         "name": "今日の課題",
         "description": "毎日ランダムに選ばれる 10 曲。"
+      },
+      "liked": {
+        "name": "高評価した曲",
+        "description": "あなたが高評価した曲を新しい順に表示します。"
+      },
+      "acclaimed": {
+        "name": "最近の高評価",
+        "description": "直近 30 日間に投稿された曲のうち評価の高い 20 曲。"
       }
     },
     "addSongs": "曲を追加",

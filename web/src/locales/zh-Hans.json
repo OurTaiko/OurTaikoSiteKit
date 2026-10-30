@@ -387,7 +387,9 @@
     "anyCourse": "任意难度",
     "filterLevel": "星级",
     "anyLevel": "任意星级",
-    "allCategories": "全部"
+    "allCategories": "全部",
+    "hasDouble": "含 1P／2P 分侧谱面",
+    "hasBranching": "含分歧谱面"
   },
   "common": {
     "playerCount_other": "{{count}} 位玩家",
@@ -644,6 +646,14 @@
       "daily": {
         "name": "今日课题",
         "description": "每天随机抽取的 10 首歌曲。"
+      },
+      "liked": {
+        "name": "我赞过的",
+        "description": "你点过赞的歌曲，最近的排在前面。"
+      },
+      "acclaimed": {
+        "name": "近期好评",
+        "description": "最近 30 天上传的歌曲中评价最高的 20 首。"
       }
     },
     "addSongs": "添加歌曲",
