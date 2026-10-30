@@ -3,7 +3,6 @@
     "chartInformation": "Chart information",
     "categories": "Categories",
     "chartCategories": "Chart categories",
-    "selectMultipleCategoriesDefaultsToVarietyIfNoneAreSelected": "Select multiple categories. Defaults to Variety if none are selected.",
     "reloadCategories": "Reload categories",
     "loadingCategories": "Loading categories…",
     "chartExceedsThePreviewSizeLimit": "Chart exceeds the preview size limit",
@@ -382,7 +381,13 @@
     "selectPlayerSide": "Select player side",
     "manageChart": "Manage",
     "chartSections": "Chart sections",
-    "chartTab": "Chart"
+    "chartTab": "Chart",
+    "categoriesHint": "Select any number; none means Variety.",
+    "filterCourse": "Difficulty",
+    "anyCourse": "Any difficulty",
+    "filterLevel": "Star level",
+    "anyLevel": "Any star level",
+    "allCategories": "All"
   },
   "common": {
     "playerCount_other": "{{count}} players",

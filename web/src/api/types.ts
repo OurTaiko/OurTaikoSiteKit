@@ -1,6 +1,6 @@
 // What both sites' APIs return. A site's own api/types.ts re-exports these and
-// adds its Chart, User and Category, which build on ChartBase, UserBase and
-// CategoryBase; the generic types take the site's own as their parameter.
+// adds its Chart and User, which build on ChartBase and UserBase; the generic
+// types take the site's own as their parameter.
 
 export type Locale = 'en' | 'ja' | 'zh' | 'ko'
 export type UserBase = {
@@ -13,7 +13,10 @@ export type UserBase = {
   avatarUrl?: string
 }
 export type Session<U extends UserBase = UserBase> = { user: U | null; csrfToken: string }
-export type CategoryBase = { id: string; title: string; genre: string }
+/** A category with its published charts (a chart may be in several). */
+export type Category = { id: string; title: string; genre: string; chartCount: number }
+/** GET /categories: the catalog and the published charts in all. */
+export type CategoryList = { items: Category[]; chartCount: number }
 
 export type Side = 'single' | 'p1' | 'p2'
 /**

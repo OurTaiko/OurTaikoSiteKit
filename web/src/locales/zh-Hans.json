@@ -3,7 +3,6 @@
     "chartInformation": "谱面信息",
     "categories": "所属分类",
     "chartCategories": "谱面分类",
-    "selectMultipleCategoriesDefaultsToVarietyIfNoneAreSelected": "可选择多个分类；未选择时归入 Variety。",
     "reloadCategories": "重试加载分类",
     "loadingCategories": "正在加载分类…",
     "chartExceedsThePreviewSizeLimit": "谱面超过预览大小限制",
@@ -382,7 +381,13 @@
     "selectPlayerSide": "选择玩家侧",
     "manageChart": "管理",
     "chartSections": "谱面详情分区",
-    "chartTab": "谱面"
+    "chartTab": "谱面",
+    "categoriesHint": "可多选；不选时归入综合。",
+    "filterCourse": "难度",
+    "anyCourse": "任意难度",
+    "filterLevel": "星级",
+    "anyLevel": "任意星级",
+    "allCategories": "全部"
   },
   "common": {
     "playerCount_other": "{{count}} 位玩家",

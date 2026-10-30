@@ -3,7 +3,6 @@
     "chartInformation": "譜面情報",
     "categories": "カテゴリー",
     "chartCategories": "譜面カテゴリー",
-    "selectMultipleCategoriesDefaultsToVarietyIfNoneAreSelected": "複数選択できます。未選択の場合は Variety に分類されます。",
     "reloadCategories": "カテゴリーを再読み込み",
     "loadingCategories": "カテゴリーを読み込み中…",
     "chartExceedsThePreviewSizeLimit": "譜面がプレビューのサイズ上限を超えています",
@@ -382,7 +381,13 @@
     "selectPlayerSide": "プレイヤー側を選択",
     "manageChart": "管理",
     "chartSections": "譜面の詳細",
-    "chartTab": "譜面"
+    "chartTab": "譜面",
+    "categoriesHint": "複数選択できます。選択しない場合はバラエティになります。",
+    "filterCourse": "難易度",
+    "anyCourse": "すべての難易度",
+    "filterLevel": "★",
+    "anyLevel": "すべての★",
+    "allCategories": "すべて"
   },
   "common": {
     "playerCount_other": "{{count}} 人のプレイヤー",
