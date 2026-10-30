@@ -191,8 +191,6 @@
     "theNewTjaReplacesEveryChartInThisSongAllPlayersScores": "새 TJA가 이 곡의 모든 보면을 대체하고 이전 파일은 삭제됩니다. 보면 내용이 바뀐 난이도에서만 모든 플레이어의 이전 점수가 보존된 채 리더보드에서 제외됩니다. 제목 등 헤더만 바꾸면 점수에 영향이 없습니다. 새 TJA에 없는 난이도의 점수는 삭제됩니다. 음원을 교체하면 곡 전체의 이전 점수가 리더보드에서 제외됩니다.",
     "theSongUrlStaysTheSameTitlesComeFromTheNewTja": "곡 주소는 유지되며 곡명과 부제는 새 TJA를 따릅니다. 새 오디오를 선택하지 않으면 현재 오디오를 사용합니다. 검증과 저장 성공 후에만 기존 데이터를 삭제합니다.",
     "chooseFiles": "파일 선택",
-    "newTjaRequiredCurrentAudioCanBeKept": "새 TJA는 필수이며 오디오는 유지할 수 있습니다",
-    "bothFilesAreRequired": "두 파일 모두 필요합니다",
     "dropChartAndAudioHere": "채보와 오디오를 여기에 드롭하세요",
     "orChooseFilesBelow": "또는 아래에서 파일을 선택하세요",
     "tjaChart": "TJA 채보",

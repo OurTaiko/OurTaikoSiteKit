@@ -191,8 +191,6 @@
     "theNewTjaReplacesEveryChartInThisSongAllPlayersScores": "新しい TJA はこの曲の譜面をすべて置き換え、旧ファイルは削除されます。譜面内容が変わった難易度だけ、全プレイヤーの旧スコアは保持されたままランキングから外れます。タイトルなどヘッダーだけの変更はスコアに影響しません。新しい TJA にない難易度のスコアは削除されます。音声を差し替えると曲全体の旧スコアがランキングから外れます。",
     "theSongUrlStaysTheSameTitlesComeFromTheNewTja": "楽曲の URL は維持され、曲名とサブタイトルは新しい TJA の値になります。音声を選び直さなければ現在の音声を使います。検証と保存の成功後にのみ旧データを削除します。",
     "chooseFiles": "ファイルを選択",
-    "newTjaRequiredCurrentAudioCanBeKept": "新しい TJA は必須です。音声はそのまま使えます",
-    "bothFilesAreRequired": "両方のファイルが必要です",
     "dropChartAndAudioHere": "譜面と音声をここにドロップ",
     "orChooseFilesBelow": "または下からファイルを選択",
     "tjaChart": "TJA 譜面",

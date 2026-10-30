@@ -191,8 +191,6 @@
     "theNewTjaReplacesEveryChartInThisSongAllPlayersScores": "The new TJA replaces every chart of this song and the old file is deleted. Only on courses whose chart content changed do all players' old scores stay but leave the leaderboard; header-only changes such as titles do not affect scores. Scores on courses the new TJA no longer has are deleted. Replacing the audio retires the whole song's old scores.",
     "theSongUrlStaysTheSameTitlesComeFromTheNewTja": "The song URL stays the same. Titles come from the new TJA. Keep the current audio by not selecting a new file. Old data is deleted only after validation and saving succeed.",
     "chooseFiles": "Choose files",
-    "newTjaRequiredCurrentAudioCanBeKept": "New TJA required; current audio can be kept",
-    "bothFilesAreRequired": "Both files are required",
     "dropChartAndAudioHere": "Drop chart and audio here",
     "orChooseFilesBelow": "Or choose files below",
     "tjaChart": "TJA chart",

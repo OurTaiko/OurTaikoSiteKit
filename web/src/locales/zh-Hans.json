@@ -191,8 +191,6 @@
     "theNewTjaReplacesEveryChartInThisSongAllPlayersScores": "新 TJA 将替换整首歌曲的谱面，旧文件会删除。只有谱面内容有变化的难度，所有玩家的旧成绩才会保留并移出排行榜；只改标题、译名等头部信息不影响成绩。新 TJA 里不再存在的难度，其成绩会被删除。更换音频则整首歌的旧成绩都移出排行榜。",
     "theSongUrlStaysTheSameTitlesComeFromTheNewTja": "歌曲地址保留，名称和副标题以新 TJA 为准。未选择新音频时沿用当前音频。只有新文件校验并保存成功后才会删除旧数据。",
     "chooseFiles": "选择文件",
-    "newTjaRequiredCurrentAudioCanBeKept": "新 TJA 必选，音频可沿用",
-    "bothFilesAreRequired": "两个文件，缺一不可",
     "dropChartAndAudioHere": "把谱面与音频拖到这里",
     "orChooseFilesBelow": "或点击下方选择文件",
     "tjaChart": "TJA 谱面",
