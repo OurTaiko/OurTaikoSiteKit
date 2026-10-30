@@ -117,8 +117,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     })
   }, [])
   const notify = useCallback(
-    (message: ReactNode, kind: NoticeKind = 'info', title = '') => {
-      publish(`event-${++sequence.current}`, { message, kind, title })
+    (
+      message: ReactNode,
+      kind: NoticeKind = 'info',
+      title = '',
+      finalFocus?: RefObject<HTMLElement | null>,
+    ) => {
+      publish(`event-${++sequence.current}`, { message, kind, title, finalFocus })
     },
     [publish],
   )
@@ -142,6 +147,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           }
           alert={current.kind === 'error'}
           onDismiss={() => dismiss(current.id)}
+          finalFocus={current.finalFocus}
         >
           <div className="flex items-start gap-3 [&>svg]:shrink-0 [&>svg]:text-muted-foreground">
             <Icon size={26} aria-hidden="true" />

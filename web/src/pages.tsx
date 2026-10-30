@@ -307,6 +307,8 @@ export function Detail() {
     [busy, setBusy] = useState(false),
     [packaging, setPackaging] = useState(false)
   const [editing, setEditing] = useState(false)
+  // The saved notice hands focus back here; the edit dialog is gone by then.
+  const editButton = useRef<HTMLButtonElement>(null)
   const [coverEditing, setCoverEditing] = useState(false)
   const [collaborating, setCollaborating] = useState(false)
   const [collecting, setCollecting] = useState(false)
@@ -571,7 +573,7 @@ export function Detail() {
           onSaved={(updated) => {
             setChart(updated as Chart)
             setEditing(false)
-            notify(t('messages.chartInformationSaved'), 'success')
+            notify(t('messages.chartInformationSaved'), 'success', '', editButton)
           }}
         />
       )}
@@ -772,6 +774,7 @@ export function Detail() {
                 )}
                 <li>
                   <button
+                    ref={editButton}
                     type="button"
                     className={manageItemClassName}
                     onClick={() => setEditing(true)}

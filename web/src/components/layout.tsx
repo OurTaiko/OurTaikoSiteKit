@@ -53,7 +53,7 @@ export function Layout() {
   return (
     <div className="bg-background min-h-svh text-foreground">
       <header className="top-0 z-30 sticky bg-background/95 backdrop-blur-xl border-t-[5px] border-t-(--hero) border-b">
-        <div className="flex items-center gap-4 mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl h-[4.25rem]">
+        <div className="flex items-center gap-2 sm:gap-4 mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl h-[4.25rem]">
           <Link className="flex items-center gap-2 font-extrabold text-xl shrink-0" to="/">
             <img src="/icons/icon-192.png" alt="" className="rounded-lg size-8" />
             <span>
@@ -94,7 +94,10 @@ export function Layout() {
             )}
           </nav>
           <div className="flex items-center gap-2 ml-auto">
-            <ThemeToggle />
+            {/* At 320px a signed-in header has no room for it; the theme then follows the system. */}
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
             {session.loading ? (
               <span className="text-muted-foreground text-xs">{t('messages.connecting')}</span>
             ) : session.user ? (
