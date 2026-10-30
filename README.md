@@ -1,6 +1,6 @@
 # OurTaikoSiteKit
 
-Code shared by the two OurTaiko chart sites, [Fanmade](https://github.com/OurTaiko/Fanmade) and [OurTaikoDatabase](https://github.com/OurTaiko/OurTaikoDatabase). Each site checks this repository out as the git submodule `kit/` and pins a commit; database migrations stay in the sites.
+Code shared by the two OurTaiko chart sites, [Fanmade](https://github.com/OurTaiko/Fanmade) and [OurTaiko Database](https://github.com/OurTaiko/Database). Each site checks this repository out as the git submodule `kit/` and pins a commit; database migrations stay in the sites.
 
 - Go module `ourtaiko.dev/sitekit` (`audio`, `charthash`, `constants`, `cover`, `objectstore`, `tja`, `video`). `tja` is the TJA upload gate both sites run, and `web/src/tja.ts` the browser's copy of it; `contracts/validation.json` holds the cases both test against. `tja` and `charthash` read chart bodies with the TJAParser tool (`TJAPARSER_BIN`). A site requires it with `replace ourtaiko.dev/sitekit => ./kit`. Test here with `go test ./...`.
 - `web/`: the pnpm workspace package `@ourtaiko/sitekit`, source only. A site lists `../kit/web` in its `pnpm-workspace.yaml` and imports files through the `@sitekit/` alias (Vite and `tsconfig.json`); its Vitest also runs the tests here.
