@@ -10,11 +10,13 @@ import {
   LinkSimpleIcon,
   MinusIcon,
   PencilSimpleIcon,
+  PlusCircleIcon,
   PlusIcon,
   ShieldWarningIcon,
   TrashIcon,
 } from '@phosphor-icons/react'
 import { api, jsonRequest } from './api/client'
+import { planReplies, type FoldPolicy } from './comment-folding'
 import { endpoints } from './api/endpoints'
 import type {
   ChartBase,
@@ -41,8 +43,18 @@ import { useNotification } from './notification-context'
 import { useSession } from './session-context'
 
 const maxCommentLength = 10000
-// Deeper replies continue on the comment's own page, as on Reddit.
+// Deeper replies continue on the comment's own page, as on Reddit; a phone has
+// no room for deep indentation and stops sooner.
 const maxVisibleDepth = 8
+const maxVisibleDepthNarrow = 5
+const narrowScreen = '(max-width: 639px)'
+// What each top-level thread shows first; the rest folds into "N replies".
+const threadFold: FoldPolicy = { budget: 10, depth: 4, rootReplies: 4, replies: 2 }
+const threadFoldNarrow: FoldPolicy = { budget: 8, depth: 2, rootReplies: 3, replies: 2 }
+// A permalink shows a single thread, so more of it.
+const focusFold: FoldPolicy = { budget: 40, depth: 6, rootReplies: 10, replies: 4 }
+// What each click on a folded button reveals.
+const expandFold: FoldPolicy = { budget: 10, depth: 3, rootReplies: 10, replies: 2 }
 // Comments at or below this score start collapsed.
 const collapseScore = -5
 
@@ -245,11 +257,22 @@ function Composer({
 type Tree = {
   subject: CommentSubject
   focusId?: string
+  narrow: boolean
+  /** The deepest level shown; deeper replies get a continue-thread link. */
+  maxDepth: number
   update: (id: string, change: (comment: Comment) => Comment) => void
   addReply: (parentId: string, reply: Comment) => void
   remove: (id: string, purged: boolean, removed: boolean) => void
 }
 const TreeContext = createContext<Tree | null>(null)
+// How many direct replies each comment in a thread shows first, as planned by the
+// top-level comment or the latest expansion above it.
+const FoldContext = createContext<Map<string, number>>(new Map())
+
+// A policy goes no deeper than the levels left below `level`.
+function foldFrom(policy: FoldPolicy, level: number, maxDepth: number): FoldPolicy {
+  return { ...policy, depth: Math.min(policy.depth, maxDepth - level) }
+}
 
 function mapTree(items: Comment[], id: string, change: (c: Comment) => Comment): Comment[] {
   return items.map((c) =>
@@ -282,6 +305,13 @@ function CommentNode({ comment, level }: { comment: Comment; level: number }) {
   const { notify } = useNotification()
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(comment.score <= collapseScore)
+  const inheritedFold = useContext(FoldContext)
+  const [fold, setFold] = useState(() => {
+    if (level > 0) return inheritedFold
+    const policy = tree.focusId ? focusFold : tree.narrow ? threadFoldNarrow : threadFold
+    return planReplies(comment, foldFrom(policy, level, tree.maxDepth))
+  })
+  const [shown, setShown] = useState(() => fold.get(comment.id) ?? 0)
   const [replying, setReplying] = useState(false)
   const [editing, setEditing] = useState(false)
   const [confirm, setConfirm] = useState(false)
@@ -313,6 +343,12 @@ function CommentNode({ comment, level }: { comment: Comment; level: number }) {
   const permalink = tree.subject.commentPath(comment.id)
   const author = gone ? '' : comment.author || t('messages.unknownMember')
   const hiddenReplies = comment.replyCount - comment.replies.length
+  const folded = comment.replies.slice(shown)
+  const expand = () => {
+    const more = planReplies(comment, foldFrom(expandFold, level, tree.maxDepth), shown)
+    setFold(new Map([...fold, ...more]))
+    setShown(Math.max(more.get(comment.id) ?? 0, shown + 1))
+  }
   const remove = async () => {
     setBusy(true)
     try {
@@ -529,6 +565,8 @@ function CommentNode({ comment, level }: { comment: Comment; level: number }) {
                         jsonRequest('POST', { body, parentId: comment.id }, csrfToken),
                       )
                       tree.addReply(comment.id, reply)
+                      // The new reply comes first; show one more so none already shown folds.
+                      setShown((n) => n + 1)
                       setReplying(false)
                     }}
                   />
@@ -537,7 +575,7 @@ function CommentNode({ comment, level }: { comment: Comment; level: number }) {
             </div>
           )}
           {!collapsed &&
-            (level >= maxVisibleDepth && comment.replyCount > 0 ? (
+            (level >= tree.maxDepth && comment.replyCount > 0 ? (
               <Link
                 to={permalink}
                 className="mt-2 inline-flex items-center gap-1 text-xs text-link hover:underline"
@@ -548,17 +586,33 @@ function CommentNode({ comment, level }: { comment: Comment; level: number }) {
             ) : (
               (comment.replies.length > 0 || hiddenReplies > 0) && (
                 <div className="mt-3 space-y-4">
-                  {comment.replies.map((reply) => (
-                    <CommentNode key={reply.id} comment={reply} level={level + 1} />
-                  ))}
-                  {hiddenReplies > 0 && (
-                    <Link
-                      to={permalink}
-                      className="inline-flex items-center gap-1 text-xs text-link hover:underline"
+                  <FoldContext.Provider value={fold}>
+                    {comment.replies.slice(0, shown).map((reply) => (
+                      <CommentNode key={reply.id} comment={reply} level={level + 1} />
+                    ))}
+                  </FoldContext.Provider>
+                  {folded.length > 0 ? (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 rounded-md text-xs font-medium text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-expanded={false}
+                      onClick={expand}
                     >
-                      {t('interactions.moreReplies', { count: hiddenReplies })}
-                      <ArrowRightIcon className="size-3" />
-                    </Link>
+                      <PlusCircleIcon className="size-3.5" />
+                      {shown === 0
+                        ? t('interactions.replyCount', { count: countTree(folded) })
+                        : t('interactions.moreReplies', { count: countTree(folded) })}
+                    </button>
+                  ) : (
+                    hiddenReplies > 0 && (
+                      <Link
+                        to={permalink}
+                        className="inline-flex items-center gap-1 text-xs text-link hover:underline"
+                      >
+                        {t('interactions.moreReplies', { count: hiddenReplies })}
+                        <ArrowRightIcon className="size-3" />
+                      </Link>
+                    )
                   )}
                 </div>
               )
@@ -601,6 +655,8 @@ export function CommentSection({
   const { user, csrfToken } = useSession()
   const location = useLocation()
   const [sort, setSort] = useState<CommentSort>('best')
+  // Read once: rotating a phone does not fold comments already on screen.
+  const [narrow] = useState(() => !!window.matchMedia?.(narrowScreen).matches)
   const [items, setItems] = useState<Comment[] | null>(null)
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -656,6 +712,8 @@ export function CommentSection({
   const tree: Tree = {
     subject,
     focusId,
+    narrow,
+    maxDepth: narrow ? maxVisibleDepthNarrow : maxVisibleDepth,
     update: (id, change) => setItems((current) => current && mapTree(current, id, change)),
     addReply: (parentId, reply) => {
       setItems(
