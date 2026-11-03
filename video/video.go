@@ -26,6 +26,9 @@ const (
 	MediaType   = "video/mp4"
 )
 
+// ValidOffset reports whether n is a usable MOVIEOFFSET, in seconds.
+func ValidOffset(n float64) bool { return !math.IsNaN(n) && math.Abs(n) <= MaxDuration }
+
 // ErrInvalid reports an upload that is not a usable video.
 var ErrInvalid = errors.New("invalid video")
 

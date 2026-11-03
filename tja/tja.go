@@ -442,6 +442,55 @@ func SetWave(data []byte, name string) ([]byte, bool) { return setHeader(data, "
 // SetMovie points the BGMOVIE header at the stored movie in the same way.
 func SetMovie(data []byte, name string) ([]byte, bool) { return setHeader(data, "BGMOVIE", name) }
 
+// SetMovieHeaders sets BGMOVIE to name and MOVIEOFFSET to offset in a stored TJA's song
+// header, leaving every other line unchanged; a site changing a chart's movie or offset on its
+// own rewrites both, which players read from the TJA. A header the file lacks is added after
+// WAVE, a missing MOVIEOFFSET only when offset is not 0. The chart blocks, and so their
+// hashes, are kept. It fails on a file without WAVE before the first #START.
+func SetMovieHeaders(data []byte, name string, offset float64) ([]byte, bool) {
+	values := map[string]string{"BGMOVIE": name, "MOVIEOFFSET": strconv.FormatFloat(offset, 'f', -1, 64)}
+	lines := strings.Split(string(data), "\n")
+	wave, newline := -1, "\n"
+	for i, raw := range lines {
+		line, cr := strings.CutSuffix(raw, "\r")
+		s := strings.TrimSpace(strings.SplitN(line, "//", 2)[0])
+		if strings.HasPrefix(s, "#START") {
+			break
+		}
+		key, _, found := strings.Cut(s, ":")
+		if !found {
+			continue
+		}
+		// The upload gate takes these two only in capitals, once each.
+		key = strings.TrimSpace(key)
+		if value, ok := values[key]; ok {
+			lines[i] = key + ":" + value
+			if cr {
+				lines[i] += "\r"
+			}
+			delete(values, key)
+		} else if strings.EqualFold(key, "WAVE") && wave < 0 {
+			wave = i
+			if cr {
+				newline = "\r\n"
+			}
+		}
+	}
+	var added []string
+	for _, key := range []string{"BGMOVIE", "MOVIEOFFSET"} {
+		if value, ok := values[key]; ok && (key == "BGMOVIE" || offset != 0) {
+			added = append(added, key+":"+value+strings.TrimSuffix(newline, "\n"))
+		}
+	}
+	if len(added) > 0 {
+		if wave < 0 {
+			return nil, false
+		}
+		lines = append(lines[:wave+1], append(added, lines[wave+1:]...)...)
+	}
+	return []byte(strings.Join(lines, "\n")), true
+}
+
 func setHeader(data []byte, key, value string) ([]byte, bool) {
 	start, end, _, ok := header(data, key)
 	if !ok {

@@ -33,6 +33,28 @@ export function jsonRequest(method: string, body: unknown, csrf = ''): RequestIn
     body: JSON.stringify(body),
   }
 }
+/**
+ * Sets a chart's background movie apart from its other files, with `offset` as its
+ * MOVIEOFFSET when given. The server transcodes it after replying 202; the outcome arrives as
+ * an upload_result notification.
+ */
+export function replaceMovie(
+  chartId: string,
+  file: File,
+  offset: number | undefined,
+  csrf: string,
+  signal?: AbortSignal,
+) {
+  const form = new FormData()
+  if (offset !== undefined) form.append('movieOffset', String(offset))
+  form.append('movie', file)
+  return api<{ status: 'processing' }>(endpoints.chartMovie(chartId), {
+    method: 'PUT',
+    headers: { 'X-CSRF-Token': csrf, Prefer: 'respond-async' },
+    body: form,
+    signal,
+  })
+}
 /** Reads a new UTF-8 TJA for a chart as its replacement would, storing nothing. audioName is new audio's. */
 export function previewReplacement(
   chartId: string,

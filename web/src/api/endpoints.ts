@@ -57,6 +57,8 @@ export const endpoints = {
   respondCollaboration: (id: string) =>
     `${API_ROOT}/me/notifications/${encodeURIComponent(id)}/respond`,
   chartFiles: (id: string) => `${chartPath(id)}/files`,
+  /** PUT: the background movie on its own, with an optional movieOffset. */
+  chartMovie: (id: string) => `${chartPath(id)}/movie`,
   chartFilesPreview: (id: string) => `${chartPath(id)}/files/preview`,
   /** The stored files' manifest: direct links, sizes and SHA-256. */
   resources: (id: string) => `${chartPath(id)}/resources`,
