@@ -171,6 +171,16 @@ export type AppNotification = {
     name?: string
   } & Record<string, unknown>
 }
+/** An invitation as the chart's owners see it, kept after it is answered. */
+export type Collaboration = {
+  id: string
+  status: 'pending' | 'accepted' | 'declined'
+  createdAt: string
+  respondedAt: string | null
+  inviter: { id: string; nickname: string; avatarUrl?: string }
+  recipient: { id: string; nickname: string; avatarUrl?: string }
+}
+export type CollaborationHistory = { items: Collaboration[] }
 export type NotificationPage = {
   items: AppNotification[]
   total: number
