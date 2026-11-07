@@ -555,7 +555,9 @@ export function NotificationsPage() {
                         t(
                           n.data.status === 'accepted'
                             ? 'collaboration.accepted'
-                            : 'collaboration.declined',
+                            : n.data.status === 'revoked'
+                              ? 'collaboration.revoked'
+                              : 'collaboration.declined',
                         )
                       )}
                     </div>

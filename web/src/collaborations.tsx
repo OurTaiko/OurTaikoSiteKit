@@ -31,6 +31,8 @@ export function CollaborationDialog({
   const [busy, setBusy] = useState(false)
   const [history, setHistory] = useState<Collaboration[] | null>(null)
   const [historyError, setHistoryError] = useState('')
+  const [revoking, setRevoking] = useState<string | null>(null)
+  const [revokeError, setRevokeError] = useState('')
   const [selected, setSelected] = useState<string | null>(null)
   useEffect(() => {
     const controller = new AbortController()
@@ -76,6 +78,22 @@ export function CollaborationDialog({
     pending: t('collaboration.statusPending'),
     accepted: t('collaboration.statusAccepted'),
     declined: t('collaboration.statusDeclined'),
+    revoked: t('collaboration.statusRevoked'),
+  }
+  // Any owner can withdraw a pending invitation; the record stays as revoked.
+  const revoke = async (invitation: string) => {
+    setRevoking(invitation)
+    setRevokeError('')
+    try {
+      await api(endpoints.collaboration(chart.id, invitation), jsonRequest('DELETE', {}, csrfToken))
+      notify(t('collaboration.revokedNotice'), 'success')
+    } catch (e) {
+      setRevokeError((e as Error).message)
+    } finally {
+      // Reload either way: the recipient may have answered in the meantime.
+      await loadHistory()
+      setRevoking(null)
+    }
   }
   const invite = async () => {
     if (!selected) return
@@ -99,7 +117,7 @@ export function CollaborationDialog({
     <Modal
       title={t('collaboration.add')}
       onDismiss={onDismiss}
-      busy={busy}
+      busy={busy || revoking !== null}
       actions={
         <Button disabled={!selected || busy || pending} onClick={() => void invite()}>
           {t('collaboration.invite')}
@@ -181,6 +199,7 @@ export function CollaborationDialog({
             {t('collaboration.history')}
           </h3>
           {historyError && <Notice>{historyError}</Notice>}
+          {revokeError && <Notice>{revokeError}</Notice>}
           {!history && !historyError && <p role="status">{t('messages.connecting')}</p>}
           {history?.length === 0 && (
             <p className="text-sm text-muted-foreground">{t('collaboration.noHistory')}</p>
@@ -207,19 +226,38 @@ export function CollaborationDialog({
                         {t('collaboration.invitedBy', {
                           name: item.inviter.nickname || t('messages.unknownMember'),
                         })}
+                        {item.revokedBy &&
+                          ` · ${t('collaboration.revokedBy', {
+                            name: item.revokedBy.nickname || t('messages.unknownMember'),
+                          })}`}
                       </span>
                     </span>
-                    <Badge
-                      variant={
-                        item.status === 'accepted'
-                          ? 'default'
-                          : item.status === 'declined'
-                            ? 'outline'
-                            : 'secondary'
-                      }
-                    >
-                      {statusLabel[item.status] ?? item.status}
-                    </Badge>
+                    <span className="flex shrink-0 flex-col items-end gap-2">
+                      <Badge
+                        variant={
+                          item.status === 'pending'
+                            ? 'secondary'
+                            : item.status === 'accepted'
+                              ? 'default'
+                              : 'outline'
+                        }
+                      >
+                        {statusLabel[item.status] ?? item.status}
+                      </Badge>
+                      {item.status === 'pending' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={revoking !== null}
+                          aria-label={t('collaboration.revokeLabel', { name: nickname })}
+                          onClick={() => void revoke(item.id)}
+                        >
+                          {revoking === item.id
+                            ? t('collaboration.revoking')
+                            : t('collaboration.revoke')}
+                        </Button>
+                      )}
+                    </span>
                   </li>
                 )
               })}

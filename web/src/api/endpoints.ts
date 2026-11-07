@@ -53,6 +53,8 @@ export const endpoints = {
   /** GET /charts/{id} looks for the chart's number unless told by=id. */
   chartDetail: (id: string) => withQuery(chartPath(id), { by: 'id' }),
   collaborations: (id: string) => `${chartPath(id)}/collaborations`,
+  collaboration: (id: string, invitation: string) =>
+    `${chartPath(id)}/collaborations/${encodeURIComponent(invitation)}`,
   chartOwnership: (id: string) => `${chartPath(id)}/owners/me`,
   respondCollaboration: (id: string) =>
     `${API_ROOT}/me/notifications/${encodeURIComponent(id)}/respond`,

@@ -174,11 +174,14 @@ export type AppNotification = {
 /** An invitation as the chart's owners see it, kept after it is answered. */
 export type Collaboration = {
   id: string
-  status: 'pending' | 'accepted' | 'declined'
+  status: 'pending' | 'accepted' | 'declined' | 'revoked'
   createdAt: string
+  /** When it was answered or revoked. */
   respondedAt: string | null
   inviter: { id: string; nickname: string; avatarUrl?: string }
   recipient: { id: string; nickname: string; avatarUrl?: string }
+  /** The owner who revoked it, when revoked. */
+  revokedBy: { id: string; nickname: string; avatarUrl?: string } | null
 }
 export type CollaborationHistory = { items: Collaboration[] }
 export type NotificationPage = {
