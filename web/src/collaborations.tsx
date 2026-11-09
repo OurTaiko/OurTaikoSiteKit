@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { XIcon } from '@phosphor-icons/react'
 import { api, jsonRequest } from './api/client'
 import { endpoints } from './api/endpoints'
 import type {
@@ -207,6 +208,90 @@ export function CollaborationDialog({
         </section>
       </div>
     </Modal>
+  )
+}
+
+/**
+ * The body of an upload page's co-creator section: the users a new chart
+ * invites once it is published, and the search to choose them from. The site
+ * sends their IDs with the upload as collaboratorIds; the server invites them.
+ */
+export function UploadCollaborators({
+  value,
+  disabled = false,
+  onChange,
+}: {
+  value: PublicUser[]
+  disabled?: boolean
+  onChange: (users: PublicUser[]) => void
+}) {
+  const { t } = useTranslation()
+  const { user: uploader } = useSession()
+  const toggle = (user: PublicUser) =>
+    onChange(
+      value.some((chosen) => chosen.id === user.id)
+        ? value.filter((chosen) => chosen.id !== user.id)
+        : [...value, user],
+    )
+  return (
+    <>
+      <h2 className="text-base font-extrabold">
+        {t('collaboration.tab')}
+        <span className="ml-2 text-xs font-normal text-muted-foreground">
+          {t('messages.optional2')}
+        </span>
+      </h2>
+      <p className="text-sm text-muted-foreground">
+        {t('collaboration.onUpload')} {t('collaboration.description')}
+      </p>
+      <section aria-labelledby="upload-collaborators" className="space-y-2">
+        <h3 id="upload-collaborators" className="text-sm font-bold">
+          {t('collaboration.chosen')}
+        </h3>
+        {value.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t('collaboration.noneChosen')}</p>
+        ) : (
+          <ul className="flex flex-wrap gap-2">
+            {value.map((user) => {
+              const nickname = user.nickname || t('messages.unknownMember')
+              return (
+                <li
+                  key={user.id}
+                  className="flex max-w-full items-center gap-2 rounded-full border py-1 pr-1 pl-2 text-sm"
+                >
+                  <UserAvatar nickname={nickname} avatarUrl={user.avatarUrl} className="size-6" />
+                  <span className="min-w-0 truncate">{nickname}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    disabled={disabled}
+                    aria-label={t('collaboration.remove', { name: nickname })}
+                    onClick={() => toggle(user)}
+                  >
+                    <XIcon className="size-4" aria-hidden="true" />
+                  </Button>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </section>
+      {/* Enter in the search box searches; it must not submit the upload form around it. */}
+      <div
+        className="contents"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && e.target instanceof HTMLInputElement) e.preventDefault()
+        }}
+      >
+        <UserSearch
+          disabled={disabled}
+          pressed={(id) => value.some((user) => user.id === id)}
+          note={(user) => (user.id === uploader?.id ? t('collaboration.owner') : null)}
+          onChoose={toggle}
+        />
+      </div>
+    </>
   )
 }
 
