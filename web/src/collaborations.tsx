@@ -2,7 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api, jsonRequest } from './api/client'
 import { endpoints } from './api/endpoints'
-import type { ChartBase, Collaboration, CollaborationHistory, UserDirectory } from './api/types'
+import type {
+  ChartBase,
+  Collaboration,
+  CollaborationHistory,
+  PublicUser,
+  UserDirectory,
+} from './api/types'
 import { isChartOwner } from './chart-owners'
 import { Badge } from './components/ui/badge'
 import { Button } from './components/ui/button'
@@ -23,10 +29,7 @@ export function CollaborationDialog({
   const { t, i18n } = useTranslation()
   const { csrfToken } = useSession()
   const { notify } = useNotification()
-  const [query, setQuery] = useState('')
-  const [page, setPage] = useState(1)
   const [pending, setPending] = useState(false)
-  const [result, setResult] = useState<UserDirectory | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [history, setHistory] = useState<Collaboration[] | null>(null)
@@ -34,20 +37,11 @@ export function CollaborationDialog({
   const [revoking, setRevoking] = useState<string | null>(null)
   const [revokeError, setRevokeError] = useState('')
   const [selected, setSelected] = useState<string | null>(null)
-  useEffect(() => {
-    const controller = new AbortController()
-    setResult(null)
-    setError('')
+  // Another list no longer shows the selected user.
+  const clearSelection = useCallback(() => {
     setSelected(null)
-    api<UserDirectory>(endpoints.users({ q: query, sort: 'active', page }), {
-      signal: controller.signal,
-    })
-      .then(setResult)
-      .catch((e: Error) => {
-        if (!controller.signal.aborted) setError(e.message)
-      })
-    return () => controller.abort()
-  }, [query, page])
+    setError('')
+  }, [])
   // The server keeps every invitation, so owners can see whom they invited
   // after the dialog that sent it closes, and other owners' invitations too.
   const loadHistory = useCallback(
@@ -126,74 +120,21 @@ export function CollaborationDialog({
     >
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">{t('collaboration.description')}</p>
-        <SearchInput
-          value={query}
-          label={t('collaboration.search')}
-          placeholder={t('collaboration.search')}
-          onSearch={(value) => {
-            setQuery(value)
-            setPage(1)
-          }}
+        {error && <Notice>{error}</Notice>}
+        <UserSearch
+          disabled={busy}
+          pressed={(id) => selected === id}
+          note={(user) =>
+            isChartOwner(chart, user.id)
+              ? t('collaboration.owner')
+              : pendingIds.has(user.id)
+                ? t('collaboration.pending')
+                : null
+          }
+          onChoose={(user) => setSelected(user.id)}
+          onSearch={clearSelection}
           onPendingChange={setPending}
         />
-        {error && <Notice>{error}</Notice>}
-        {!result && !error && <p role="status">{t('messages.connecting')}</p>}
-        {result && (
-          <div
-            className="max-h-72 space-y-2 overflow-y-auto"
-            role="group"
-            aria-label={t('collaboration.search')}
-          >
-            {result.items.length === 0 && (
-              <p className="text-sm text-muted-foreground">{t('collaboration.noUsers')}</p>
-            )}
-            {result.items.map((user) => {
-              const owned = isChartOwner(chart, user.id)
-              const invited = pendingIds.has(user.id)
-              return (
-                <button
-                  key={user.id}
-                  type="button"
-                  disabled={owned || invited || busy || pending}
-                  aria-pressed={selected === user.id}
-                  onClick={() => setSelected(user.id)}
-                  className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left active:scale-[0.98] disabled:opacity-50 ${selected === user.id ? 'border-primary bg-primary/5' : 'border-transparent bg-muted/40'}`}
-                >
-                  <UserAvatar
-                    nickname={user.nickname || t('messages.unknownMember')}
-                    avatarUrl={user.avatarUrl}
-                    className="size-8"
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate">
-                      {user.nickname || t('messages.unknownMember')}
-                    </span>
-                    <span className="block truncate text-xs text-muted-foreground">{user.id}</span>
-                  </span>
-                  {owned ? t('collaboration.owner') : invited ? t('collaboration.pending') : null}
-                </button>
-              )
-            })}
-          </div>
-        )}
-        {result && result.total > result.pageSize && (
-          <div className="flex justify-between gap-3">
-            <Button
-              variant="outline"
-              disabled={page <= 1 || busy || pending}
-              onClick={() => setPage(page - 1)}
-            >
-              {t('messages.previous')}
-            </Button>
-            <Button
-              variant="outline"
-              disabled={page * result.pageSize >= result.total || busy || pending}
-              onClick={() => setPage(page + 1)}
-            >
-              {t('messages.next')}
-            </Button>
-          </div>
-        )}
         <section aria-labelledby="collaboration-history" className="space-y-2 border-t pt-4">
           <h3 id="collaboration-history" className="text-sm font-bold">
             {t('collaboration.history')}
@@ -266,5 +207,130 @@ export function CollaborationDialog({
         </section>
       </div>
     </Modal>
+  )
+}
+
+/**
+ * Searches members by nickname and lists them to choose from. A user with a
+ * note cannot be chosen; the note says why.
+ */
+export function UserSearch({
+  pressed,
+  note,
+  disabled = false,
+  onChoose,
+  onSearch,
+  onPendingChange,
+}: {
+  pressed: (id: string) => boolean
+  note: (user: PublicUser) => string | null
+  disabled?: boolean
+  onChoose: (user: PublicUser) => void
+  /** Another query or page is being loaded: the listed users change. Must be stable. */
+  onSearch?: () => void
+  /** True while a typed query has not been searched yet. Must be stable. */
+  onPendingChange?: (pending: boolean) => void
+}) {
+  const { t } = useTranslation()
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const [pending, setPending] = useState(false)
+  const [result, setResult] = useState<UserDirectory | null>(null)
+  const [error, setError] = useState('')
+  useEffect(() => {
+    const controller = new AbortController()
+    setResult(null)
+    setError('')
+    onSearch?.()
+    api<UserDirectory>(endpoints.users({ q: query, sort: 'active', page }), {
+      signal: controller.signal,
+    })
+      .then(setResult)
+      .catch((e: Error) => {
+        if (!controller.signal.aborted) setError(e.message)
+      })
+    return () => controller.abort()
+  }, [query, page, onSearch])
+  const changePending = useCallback(
+    (value: boolean) => {
+      setPending(value)
+      onPendingChange?.(value)
+    },
+    [onPendingChange],
+  )
+  const search = useCallback((value: string) => {
+    setQuery(value)
+    setPage(1)
+  }, [])
+  return (
+    <>
+      <SearchInput
+        value={query}
+        label={t('collaboration.search')}
+        placeholder={t('collaboration.search')}
+        onSearch={search}
+        onPendingChange={changePending}
+      />
+      {error && <Notice>{error}</Notice>}
+      {!result && !error && <p role="status">{t('messages.connecting')}</p>}
+      {result && (
+        <div
+          className="max-h-72 space-y-2 overflow-y-auto"
+          role="group"
+          aria-label={t('collaboration.search')}
+        >
+          {result.items.length === 0 && (
+            <p className="text-sm text-muted-foreground">{t('collaboration.noUsers')}</p>
+          )}
+          {result.items.map((user) => {
+            const reason = note(user)
+            const chosen = pressed(user.id)
+            return (
+              <button
+                key={user.id}
+                type="button"
+                disabled={reason !== null || disabled || pending}
+                aria-pressed={chosen}
+                onClick={() => onChoose(user)}
+                className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left active:scale-[0.98] disabled:opacity-50 ${chosen ? 'border-primary bg-primary/5' : 'border-transparent bg-muted/40'}`}
+              >
+                <UserAvatar
+                  nickname={user.nickname || t('messages.unknownMember')}
+                  avatarUrl={user.avatarUrl}
+                  className="size-8"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate">
+                    {user.nickname || t('messages.unknownMember')}
+                  </span>
+                  <span className="block truncate text-xs text-muted-foreground">{user.id}</span>
+                </span>
+                {reason}
+              </button>
+            )
+          })}
+        </div>
+      )}
+      {result && result.total > result.pageSize && (
+        <div className="flex justify-between gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={page <= 1 || disabled || pending}
+            onClick={() => setPage(page - 1)}
+          >
+            {t('messages.previous')}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={page * result.pageSize >= result.total || disabled || pending}
+            onClick={() => setPage(page + 1)}
+          >
+            {t('messages.next')}
+          </Button>
+        </div>
+      )}
+    </>
   )
 }
