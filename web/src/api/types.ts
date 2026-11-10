@@ -205,6 +205,31 @@ export type LeaderboardEntry = {
   bad: number
   drumroll: number
   submittedAt: string
+  /** The play's recording is kept and can be watched. */
+  hasReplay?: boolean
+}
+/** A play with its recording (GET /scores/{id}/replay). `replay` goes to the player as it is. */
+export type ScoreReplay = {
+  score: {
+    id: string
+    userId: string
+    songId: string
+    difficultyId: number
+    course: string
+    side: string
+    good: number
+    ok: number
+    bad: number
+    score: number
+    drumroll: number
+    max_combo: number
+    /** False once the song's files were replaced after the play: the recording no longer fits. */
+    isLatest: boolean
+    submittedAt: string
+  }
+  nickname: string
+  avatarUrl?: string
+  replay: unknown
 }
 export type Leaderboard = {
   songId: string

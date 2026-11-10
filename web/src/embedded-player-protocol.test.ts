@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { isPlayerMessage, playerDrumVolume, playerLoad } from './embedded-player-protocol'
+import {
+  isPlayerMessage,
+  playerDrumVolume,
+  playerLoad,
+  playerReplayResult,
+} from './embedded-player-protocol'
 describe('embedded player boundary', () => {
   const frame = {} as Window
   const origin = 'https://player.example.com'
@@ -37,7 +42,49 @@ describe('embedded player boundary', () => {
     )
     expect(withMovie.payload.movieBytes).toBe(movie)
   })
-  it('keeps practice controls in both modes and reserves replay as disabled', () => {
+  it('sends a replay as the practice scene with the recording', () => {
+    const record = '{"version":2,"inputs":[]}'
+    const replay = playerLoad(
+      'r',
+      'TITLE:x',
+      new ArrayBuffer(4),
+      'Oni',
+      'replay',
+      'ogg',
+      'native',
+      undefined,
+      record,
+    )
+    expect(replay.payload).toMatchObject({
+      practice: true,
+      autoPlay: false,
+      replay: true,
+      replayData: record,
+    })
+    expect(
+      playerLoad('p', 'TITLE:x', new ArrayBuffer(4), 'Oni', 'auto').payload,
+    ).not.toHaveProperty('replayData')
+  })
+  it('reads a replay result only when it is whole', () => {
+    const result = {
+      score: 1000,
+      good: 3,
+      ok: 1,
+      bad: 0,
+      drumroll: 2,
+      maxCombo: 4,
+      hits: 4,
+      early: 1,
+      late: 3,
+      meanMs: 4.5,
+      deviationMs: null,
+    }
+    expect(playerReplayResult({ replay: result })).toEqual(result)
+    expect(playerReplayResult({ replay: { ...result, good: 'x' } })).toBeNull()
+    expect(playerReplayResult({})).toBeNull()
+    expect(playerReplayResult(undefined)).toBeNull()
+  })
+  it('keeps practice controls in both modes and sends no replay with them', () => {
     const practice = playerLoad('a', 'TITLE:测试', new ArrayBuffer(4), 'Oni', 'practice')
     const auto = playerLoad('b', 'TITLE:测试', new ArrayBuffer(4), 'Edit', 'auto')
     expect(practice.payload).toMatchObject({

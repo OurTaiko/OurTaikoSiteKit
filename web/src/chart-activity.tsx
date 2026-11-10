@@ -13,7 +13,7 @@ import {
   StarIcon,
   ArrowCounterClockwiseIcon as RotateCcw,
 } from '@phosphor-icons/react'
-import type { ChartBase } from './api/types'
+import type { ChartBase, ScoreReplay } from './api/types'
 import { baseCourse, slotKey, sideName, groupCourses, groupLevel, groupName } from './courses'
 import { Notice } from './notifications'
 import { maxTja } from './tja'
@@ -50,12 +50,17 @@ export function ChartActivity({
   onTabChange: setTab,
   course,
   onCourseChange: setCourse,
+  replay,
+  onReplay,
 }: {
   chart: ChartBase
   tab: ActivityTab
   onTabChange: (tab: ActivityTab) => void
   course: string
   onCourseChange: (course: string) => void
+  // The recorded play the player shows, and the request to show one (a score id) or none (null).
+  replay?: ScoreReplay | null
+  onReplay?: (scoreId: string | null) => void
 }) {
   const { t } = useTranslation()
   const [source, setSource] = useState('')
@@ -204,7 +209,12 @@ export function ChartActivity({
         {/* The leaderboard does not need the TJA. */}
         {tab === 'leaderboard' ? (
           <TabsContent value="leaderboard">
-            <ChartLeaderboard key={course} chart={chart} course={course} />
+            <ChartLeaderboard
+              key={course}
+              chart={chart}
+              course={course}
+              onReplay={onReplay ? (scoreId) => onReplay(scoreId) : undefined}
+            />
           </TabsContent>
         ) : error ? (
           <div className="flex min-h-40 flex-col items-center justify-center gap-3 py-6 text-center">
@@ -242,7 +252,13 @@ export function ChartActivity({
                     </p>
                   }
                 >
-                  <EmbeddedPlayer chart={chart} source={titled} course={course} />
+                  <EmbeddedPlayer
+                    chart={chart}
+                    source={titled}
+                    course={course}
+                    replay={replay && slotKey(replay.score) === course ? replay : null}
+                    onReplayClose={() => onReplay?.(null)}
+                  />
                 </Suspense>
               )}
             </TabsContent>

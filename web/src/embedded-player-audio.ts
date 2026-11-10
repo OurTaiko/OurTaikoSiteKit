@@ -8,6 +8,8 @@ type Options = {
   chartText: string
   course: string
   mode: PlayerMode
+  // The recording, for mode 'replay'.
+  replayData?: string
   audioType: string
   post: (message: ReturnType<typeof playerLoad>, transfer: Transferable[]) => void
   onRequest: (id: string) => void
@@ -122,6 +124,7 @@ export class PlayerAudioLoad {
       o.audioType,
       this.decode,
       movie,
+      o.replayData,
     )
     o.post(message, movie ? [bytes, movie] : [bytes])
   }

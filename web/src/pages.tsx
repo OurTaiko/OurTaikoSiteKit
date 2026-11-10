@@ -29,7 +29,7 @@ import {
   PlaylistIcon,
 } from '@phosphor-icons/react'
 import { api, jsonRequest } from './api/client'
-import type { ChartBase, ChartList, Vote, VoteResult } from './api/types'
+import type { ChartBase, ChartList, ScoreReplay, Vote, VoteResult } from './api/types'
 import { SiteChartCard, formatDuration } from './components/chart-card'
 import { slotKey, supportsChart } from './courses'
 import { defaultDifficulty, hasConstants } from './chart-difficulty'
@@ -317,6 +317,42 @@ export function Detail() {
   const [activityTab, setActivityTab] = useState<ActivityTab>('image')
   // The block the chart area shows (slot key); empty for the default one.
   const [chosenCourse, setChosenCourse] = useState('')
+  // A recorded play shown in the player: opened from the leaderboard, or by ?replay=<score id>
+  // (a link from a player's score list).
+  const [replay, setReplay] = useState<ScoreReplay | null>(null)
+  const [query, setQuery] = useSearchParams()
+  const replayParam = query.get('replay') ?? ''
+  const loadedId = chart?.id ?? ''
+  const showReplay = useCallback(
+    (scoreId: string | null) => {
+      if (!scoreId) {
+        setReplay(null)
+        setQuery(
+          (current) => {
+            current.delete('replay')
+            return current
+          },
+          { replace: true },
+        )
+        return
+      }
+      api<ScoreReplay>(endpoints.scoreReplay(scoreId))
+        .then((data) => {
+          // A recording fits only the files it was played on.
+          if (data.score.songId !== loadedId || !data.score.isLatest)
+            throw new Error(t('messages.replayUnavailable'))
+          setChosenCourse(slotKey(data.score))
+          setSection('activity')
+          setActivityTab('preview')
+          setReplay(data)
+        })
+        .catch((e) => notify((e as Error).message || t('messages.replayUnavailable'), 'error'))
+    },
+    [loadedId, notify, setQuery, t],
+  )
+  useEffect(() => {
+    if (loadedId && replayParam) showReplay(replayParam)
+  }, [loadedId, replayParam, showReplay])
   useEffect(() => {
     const controller = new AbortController()
     setChart(null)
@@ -329,6 +365,7 @@ export function Detail() {
     setLeaving(false)
     setActivityTab('image')
     setChosenCourse('')
+    setReplay(null)
     if (!id) return
     api<Chart>(endpoints.chartDetail(id), { signal: controller.signal })
       .then(setChart)
@@ -642,6 +679,8 @@ export function Detail() {
                 onTabChange={setActivityTab}
                 course={course}
                 onCourseChange={setChosenCourse}
+                replay={replay}
+                onReplay={showReplay}
               />
             ) : (
               <section

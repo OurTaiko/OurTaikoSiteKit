@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { PlayIcon } from '@phosphor-icons/react'
 import { api } from './api/client'
 import { endpoints } from './api/endpoints'
 import type { ChartBase, Leaderboard } from './api/types'
@@ -23,7 +24,16 @@ import { useSession } from './session-context'
 
 // One block's leaderboard: every player once, with their
 // best play on the chart's current files.
-export function ChartLeaderboard({ chart, course }: { chart: ChartBase; course: string }) {
+// `onReplay` adds a button to each play whose recording is kept.
+export function ChartLeaderboard({
+  chart,
+  course,
+  onReplay,
+}: {
+  chart: ChartBase
+  course: string
+  onReplay?: (scoreId: string) => void
+}) {
   const { t, i18n } = useTranslation()
   const [page, setPage] = useState(1)
   const [data, setData] = useState<Leaderboard | null>(null)
@@ -114,6 +124,11 @@ export function ChartLeaderboard({ chart, course }: { chart: ChartBase; course: 
                     {label}
                   </TableHead>
                 ))}
+                {onReplay && (
+                  <TableHead scope="col">
+                    <span className="sr-only">{t('messages.replay')}</span>
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -157,6 +172,21 @@ export function ChartLeaderboard({ chart, course }: { chart: ChartBase; course: 
                       {new Date(entry.submittedAt).toLocaleString(locale)}
                     </time>
                   </TableCell>
+                  {onReplay && (
+                    <TableCell>
+                      {entry.hasReplay && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onReplay(entry.id)}
+                          aria-label={t('messages.watchReplayOf', { player: entry.nickname })}
+                        >
+                          <PlayIcon size={14} aria-hidden="true" />
+                          {t('messages.watchReplay')}
+                        </Button>
+                      )}
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

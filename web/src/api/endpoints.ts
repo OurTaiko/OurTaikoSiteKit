@@ -68,6 +68,7 @@ export const endpoints = {
     withQuery(`${chartPath(id)}/cover`, hash ? { v: hash } : {}),
   leaderboard: (id: string, query: { difficultyId?: number; page: number }) =>
     withQuery(`${chartPath(id)}/leaderboard`, query),
+  scoreReplay: (id: string) => `${API_ROOT}/scores/${encodeURIComponent(id)}/replay`,
   chartVote: (id: string) => `${chartPath(id)}/vote`,
   chartComments: (id: string, query: { sort: string; page: number }) =>
     withQuery(`${chartPath(id)}/comments`, query),

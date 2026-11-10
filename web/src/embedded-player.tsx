@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Button } from './components/ui/button'
 import { Slider } from './components/ui/slider'
 import { endpoints } from './api/endpoints'
-import type { ChartBase } from './api/types'
+import type { ChartBase, ScoreReplay } from './api/types'
+import { formatLocale } from './i18n'
 import { resolvePlayerUrl } from './embedded-player-source'
 import { PlayerAudioLoad } from './embedded-player-audio'
 import {
@@ -11,21 +12,33 @@ import {
   isPlayerMessage,
   playerChannel,
   playerDrumVolume,
+  playerReplayResult,
   type PlayerMode,
+  type PlayerReplayResult,
 } from './embedded-player-protocol'
 
 const playerManifestUrl = 'https://distrib.ourtaiko.org/player-build.json'
 
+// `replay`: a recorded play of this block to show instead of practice or the chart alone; the
+// other two modes close it (onReplayClose).
 export default function EmbeddedPlayer({
   chart,
   source,
   course,
+  replay,
+  onReplayClose,
 }: {
   chart: ChartBase
   source: string
   course: string
+  replay?: ScoreReplay | null
+  onReplayClose?: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const locale = formatLocale(i18n.resolvedLanguage)
+  const replayData = replay ? JSON.stringify(replay.replay) : ''
+  const replayId = replay?.score.id ?? ''
+  const [replayResult, setReplayResult] = useState<PlayerReplayResult | null>(null)
   const chartId = chart.id
   const audioType = chart.audioName.split('.').pop()?.toLowerCase() || 'ogg'
   const hasMovie = Boolean(chart.movieHash)
@@ -42,6 +55,14 @@ export default function EmbeddedPlayer({
   const [playerUrl, setPlayerUrl] = useState('')
   const playerOrigin = playerUrl ? new URL(playerUrl).origin : window.location.origin
   const opened = mode !== null
+  // A recording opens the player on it; taking it away leaves a player that showed it closed.
+  useEffect(() => {
+    setReplayResult(null)
+    setMode((current) => (replayId ? 'replay' : current === 'replay' ? null : current))
+    if (!replayId) {
+      setStatus((current) => (current === 'finished' ? 'idle' : current))
+    }
+  }, [replayId])
 
   useEffect(() => {
     if (!opened) return
@@ -116,14 +137,17 @@ export default function EmbeddedPlayer({
         setPlayerUrl('')
         setReady(false)
         setStatus('idle')
-      } else if (['loading', 'loaded', 'finished'].includes(data.type)) setStatus(data.type)
+      } else if (['loading', 'loaded', 'finished'].includes(data.type)) {
+        if (data.type === 'finished') setReplayResult(playerReplayResult(data.payload))
+        setStatus(data.type)
+      }
     }
     window.addEventListener('message', receive)
     return () => window.removeEventListener('message', receive)
   }, [playerOrigin, sendDrumVolume])
 
   useEffect(() => {
-    if (!ready || !mode || !source) return
+    if (!ready || !mode || !source || (mode === 'replay' && !replayData)) return
     const audio = new URL(endpoints.resource({ id: chartId }, 'audio'), window.location.href).href
     const movie = hasMovie
       ? new URL(endpoints.resource({ id: chartId }, 'movie'), window.location.href).href
@@ -134,6 +158,7 @@ export default function EmbeddedPlayer({
       chartText: source,
       course,
       mode,
+      replayData: mode === 'replay' ? replayData : undefined,
       audioType,
       post: (message, transfer) => {
         const target = iframe.current?.contentWindow
@@ -157,7 +182,7 @@ export default function EmbeddedPlayer({
       if (audioLoad.current === load) audioLoad.current = null
       request.current = ''
     }
-  }, [ready, mode, source, chartId, course, playerOrigin, audioType, hasMovie])
+  }, [ready, mode, source, chartId, course, playerOrigin, audioType, hasMovie, replayData])
 
   useEffect(() => {
     if (!mode || ready || error) return
@@ -170,6 +195,8 @@ export default function EmbeddedPlayer({
 
   function choose(value: PlayerMode) {
     if (mode && mode !== value) send('pause')
+    if (replay) onReplayClose?.()
+    setReplayResult(null)
     setMode(value)
   }
   function reload() {
@@ -208,13 +235,25 @@ export default function EmbeddedPlayer({
               setReady(false)
               setStatus('idle')
               setError('')
+              setReplayResult(null)
+              if (replay) onReplayClose?.()
             }}
           >
             {t('messages.playerClose')}
           </Button>
         )}
       </div>
-      <p className="text-sm text-muted-foreground">{t('messages.playerHelp')}</p>
+      {replay && mode === 'replay' && (
+        <p className="text-sm font-semibold" data-testid="replay-heading">
+          {t('messages.replayOf', {
+            player: replay.nickname,
+            score: replay.score.score.toLocaleString(locale),
+          })}
+        </p>
+      )}
+      <p className="text-sm text-muted-foreground">
+        {mode === 'replay' ? t('messages.replayHelp') : t('messages.playerHelp')}
+      </p>
       {error && (
         <div role="alert" className="flex flex-wrap items-center gap-3 text-sm">
           <span>
@@ -259,6 +298,9 @@ export default function EmbeddedPlayer({
           {t('messages.playerFinished')}
         </p>
       )}
+      {status === 'finished' && replay && replayResult && (
+        <ReplaySummary replay={replay} result={replayResult} locale={locale} />
+      )}
       {mode && playerUrl ? (
         <iframe
           key={attempt}
@@ -275,6 +317,72 @@ export default function EmbeddedPlayer({
           {t('messages.playerChoose')}
         </div>
       )}
+    </section>
+  )
+}
+
+// A replay played to the end: the play as the player judged it again, and how early or late its
+// hits were. A count that differs from the stored score means the recording was not shown as it
+// was played (a chart or a player of another version).
+function ReplaySummary({
+  replay,
+  result,
+  locale,
+}: {
+  replay: ScoreReplay
+  result: PlayerReplayResult
+  locale: string
+}) {
+  const { t } = useTranslation()
+  const stored = replay.score
+  const differs =
+    result.score !== stored.score ||
+    result.good !== stored.good ||
+    result.ok !== stored.ok ||
+    result.bad !== stored.bad
+  const ms = (value: number | null) =>
+    value === null
+      ? t('messages.replayNoTiming')
+      : t('messages.replayMilliseconds', {
+          value:
+            (value > 0 ? '+' : '') + value.toLocaleString(locale, { maximumFractionDigits: 1 }),
+        })
+  // A spread has no sign.
+  const deviation = (value: number | null) =>
+    value === null
+      ? t('messages.replayNoTiming')
+      : t('messages.replayMilliseconds', {
+          value: value.toLocaleString(locale, { maximumFractionDigits: 1 }),
+        })
+  const rows: [string, string][] = [
+    [t('messages.score'), result.score.toLocaleString(locale)],
+    [t('messages.good'), result.good.toLocaleString(locale)],
+    [t('messages.ok'), result.ok.toLocaleString(locale)],
+    [t('messages.bad'), result.bad.toLocaleString(locale)],
+    [t('messages.drumroll'), result.drumroll.toLocaleString(locale)],
+    [t('messages.replayMaxCombo'), result.maxCombo.toLocaleString(locale)],
+    [t('messages.replayMeanOffset'), ms(result.meanMs)],
+    [t('messages.replayDeviation'), deviation(result.deviationMs)],
+    [t('messages.replayEarly'), result.early.toLocaleString(locale)],
+    [t('messages.replayLate'), result.late.toLocaleString(locale)],
+  ]
+  return (
+    <section
+      className="space-y-3 rounded-xl border p-4 text-sm"
+      aria-label={t('messages.replaySummary')}
+      data-testid="replay-summary"
+    >
+      <h3 className="font-extrabold">{t('messages.replaySummary')}</h3>
+      {differs && <p role="alert">{t('messages.replayDiffers')}</p>}
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-5">
+        {rows.map(([label, value]) => (
+          <div key={label} className="flex flex-col">
+            <dt className="text-muted-foreground">{label}</dt>
+            <dd className="font-semibold tabular-nums">{value}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="text-muted-foreground">{t('messages.replayOffsetNote')}</p>
     </section>
   )
 }
