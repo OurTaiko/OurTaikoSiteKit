@@ -97,6 +97,6 @@ export const endpoints = {
     `${playlistPath(id)}/items/${encodeURIComponent(chart)}`,
   playlistOrder: (id: string) => `${playlistPath(id)}/order`,
   playlistFavorite: (id: string) => `${playlistPath(id)}/favorite`,
-  resource: (chart: Pick<ChartBase, 'id'>, kind: 'audio' | 'tja' | 'movie') =>
+  resource: (chart: Pick<ChartBase, 'id'>, kind: 'audio' | 'tja' | 'movie' | 'bgimage') =>
     `${chartPath(chart.id)}/${kind}`,
 } as const

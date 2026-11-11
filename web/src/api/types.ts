@@ -92,6 +92,8 @@ export type ChartBase = {
   /** Transcoded background movie; absent when the chart has none. */
   movieHash?: string
   movieSize?: number
+  /** Background image (BGIMAGE) as stored WebP; absent when the chart has none. */
+  bgimageHash?: string
   score: number
   upvotes: number
   downvotes: number

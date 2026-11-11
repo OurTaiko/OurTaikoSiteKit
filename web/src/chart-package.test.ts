@@ -133,6 +133,26 @@ describe('chart package', () => {
     ])
   })
 
+  it('packs the background image after the cover', async () => {
+    const background = 'RIFF background'
+    serve(
+      { ...stored, [`${cdn}/${hash(background)}.webp`]: background },
+      manifest({
+        bgimage: resource(background, 'webp'),
+        cover: resource(cover, 'webp'),
+        audio: resource(audio, 'ogg'),
+        tja: resource(tja, 'tja'),
+      }),
+    )
+    const archive = await buildChartPackage(chart, new AbortController().signal)
+    expect(Object.keys(await entries(archive))).toEqual([
+      `${hash(tja)}.tja`,
+      `${hash(audio)}.ogg`,
+      `${hash(cover)}.webp`,
+      `${hash(background)}.webp`,
+    ])
+  })
+
   it('omits the cover when the chart has none', async () => {
     serve(stored, manifest({ audio: resource(audio, 'ogg'), tja: resource(tja, 'tja') }))
     const archive = await buildChartPackage(chart, new AbortController().signal)

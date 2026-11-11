@@ -101,3 +101,21 @@ func TestRejectInvalidImages(t *testing.T) {
 		}
 	}
 }
+
+func TestEncodeBackgroundKeepsFullHD(t *testing.T) {
+	for _, size := range []struct{ w, h, wantW, wantH int }{{1920, 1080, 1920, 1080}, {3840, 2160, 1920, 1080}} {
+		img := image.NewNRGBA(image.Rect(0, 0, size.w, size.h))
+		var source bytes.Buffer
+		if err := png.Encode(&source, img); err != nil {
+			t.Fatal(err)
+		}
+		webp, err := EncodeBackground(context.Background(), "bg.png", source.Bytes())
+		if err != nil {
+			t.Fatal(err)
+		}
+		cfg, _, err := image.DecodeConfig(bytes.NewReader(webp))
+		if err != nil || cfg.Width != size.wantW || cfg.Height != size.wantH {
+			t.Fatalf("%dx%d became %dx%d (%v)", size.w, size.h, cfg.Width, cfg.Height, err)
+		}
+	}
+}

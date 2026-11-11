@@ -31,7 +31,21 @@ func ValidExtension(name string) bool {
 	return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".webp"
 }
 
+// CoverSize and BackgroundSize are the longest sides Encode and EncodeBackground keep.
+const CoverSize, BackgroundSize = 1600, 1920
+
+// Encode checks a cover upload and returns it as WebP, scaled down to CoverSize.
 func Encode(ctx context.Context, name string, data []byte) ([]byte, error) {
+	return encode(ctx, name, data, CoverSize)
+}
+
+// EncodeBackground does the same for a chart's background image (BGIMAGE), which a game shows
+// full screen, scaled down to BackgroundSize.
+func EncodeBackground(ctx context.Context, name string, data []byte) ([]byte, error) {
+	return encode(ctx, name, data, BackgroundSize)
+}
+
+func encode(ctx context.Context, name string, data []byte, longest int) ([]byte, error) {
 	if !ValidExtension(name) || len(data) == 0 || len(data) > MaxBytes {
 		return nil, ErrInvalid
 	}
@@ -55,13 +69,13 @@ func Encode(ctx context.Context, name string, data []byte) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	width, height := cfg.Width, cfg.Height
-	if width > 1600 || height > 1600 {
+	if width > longest || height > longest {
 		if width >= height {
-			height = max(1, height*1600/width)
-			width = 1600
+			height = max(1, height*longest/width)
+			width = longest
 		} else {
-			width = max(1, width*1600/height)
-			height = 1600
+			width = max(1, width*longest/height)
+			height = longest
 		}
 	}
 	cmd := exec.CommandContext(ctx, "cwebp", "-quiet", "-q", "85", "-metadata", "none", "-resize", strconv.Itoa(width), strconv.Itoa(height), "-o", "-", "--", "-")

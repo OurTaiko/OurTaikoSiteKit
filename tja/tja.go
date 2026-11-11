@@ -491,6 +491,74 @@ func SetMovieHeaders(data []byte, name string, offset float64) ([]byte, bool) {
 	return []byte(strings.Join(lines, "\n")), true
 }
 
+// SongHeader returns a song header (key in capitals, matched in any case) before the first
+// #START as written; with several declarations, the last, as the game reads them. It reads
+// headers Parse ignores, such as PREIMAGE and BGIMAGE, whose value may be any text.
+func SongHeader(data []byte, key string) string {
+	value := ""
+	for _, raw := range strings.Split(string(data), "\n") {
+		s := strings.TrimSpace(strings.SplitN(strings.TrimSuffix(raw, "\r"), "//", 2)[0])
+		if strings.HasPrefix(s, "#START") {
+			break
+		}
+		if k, v, found := strings.Cut(s, ":"); found && strings.EqualFold(strings.TrimSpace(k), key) {
+			value = strings.TrimSpace(v)
+		}
+	}
+	return value
+}
+
+// HeaderFile is the file name a header value refers to: game folders may give a path relative
+// to the TJA, with either slash, while an uploaded file has a bare name.
+func HeaderFile(value string) string {
+	value = strings.ReplaceAll(strings.Trim(value, `"`), `\`, "/")
+	if i := strings.LastIndex(value, "/"); i >= 0 {
+		value = value[i+1:]
+	}
+	return value
+}
+
+// SetSongHeader points every declaration of a song header (key in capitals) before the first
+// #START at value, written as key in capitals, leaving every other line unchanged. A file
+// without the header gets one after WAVE when value is not empty; an empty value clears the
+// declared one. It fails when the header must be added to a file without a song WAVE.
+func SetSongHeader(data []byte, key, value string) ([]byte, bool) {
+	lines := strings.Split(string(data), "\n")
+	wave, newline, found := -1, "\n", false
+	for i, raw := range lines {
+		line, cr := strings.CutSuffix(raw, "\r")
+		s := strings.TrimSpace(strings.SplitN(line, "//", 2)[0])
+		if strings.HasPrefix(s, "#START") {
+			break
+		}
+		k, _, ok := strings.Cut(s, ":")
+		if !ok {
+			continue
+		}
+		k = strings.TrimSpace(k)
+		if strings.EqualFold(k, key) {
+			lines[i] = key + ":" + value
+			if cr {
+				lines[i] += "\r"
+			}
+			found = true
+		} else if strings.EqualFold(k, "WAVE") && wave < 0 {
+			wave = i
+			if cr {
+				newline = "\r\n"
+			}
+		}
+	}
+	if !found && value != "" {
+		if wave < 0 {
+			return nil, false
+		}
+		added := key + ":" + value + strings.TrimSuffix(newline, "\n")
+		lines = append(lines[:wave+1], append([]string{added}, lines[wave+1:]...)...)
+	}
+	return []byte(strings.Join(lines, "\n")), true
+}
+
 func setHeader(data []byte, key, value string) ([]byte, bool) {
 	start, end, _, ok := header(data, key)
 	if !ok {

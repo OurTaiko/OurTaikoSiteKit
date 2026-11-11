@@ -9,7 +9,7 @@ type Manifest = {
 }
 
 /** Stored files that make up a chart package, in archive order. */
-const packaged = ['tja', 'audio', 'movie', 'cover'] as const
+const packaged = ['tja', 'audio', 'movie', 'cover', 'bgimage'] as const
 
 /** Characters that Windows, macOS or Linux reject in a file name. */
 const unsafe = /[\\/:*?"<>|\p{Cc}]/gu
@@ -49,6 +49,12 @@ function apiFiles(chart: ChartBase): PackageFile[] {
       url: endpoints.cover(chart.id, chart.coverHash),
       name: `${chart.coverHash}.webp`,
       sha256: chart.coverHash,
+    })
+  if (chart.bgimageHash)
+    files.push({
+      url: endpoints.resource(chart, 'bgimage'),
+      name: `${chart.bgimageHash}.webp`,
+      sha256: chart.bgimageHash,
     })
   return files
 }
