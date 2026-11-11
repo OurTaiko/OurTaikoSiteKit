@@ -411,6 +411,11 @@
     "uploadChartFiles": "上传谱面文件",
     "chartsNav": "发现谱面",
     "nijiiroId": "Nijiiro ID",
+    "nijiiroIdInvalid": "Nijiiro ID 必须是正整数。",
+    "nijiiroIdChecking": "正在检查是否已被使用…",
+    "nijiiroIdFree": "这个 Nijiiro ID 可以使用。",
+    "nijiiroIdUnknown": "暂时无法检查，保存时会再次确认。",
+    "nijiiroIdTaken": "这个 Nijiiro ID 已被使用：",
     "officialId": "官方 ID"
   },
   "common": {
@@ -426,6 +431,7 @@
     "NOT_FOUND": "请求的资源不存在或已移除。",
     "REQUEST_INVALID": "请求内容无效，请检查后重试。",
     "SERVICE_UNAVAILABLE": "服务暂时不可用，请稍后重试。",
+    "NIJIIRO_ID_TAKEN": "这个 Nijiiro ID 已被其他谱面使用。",
     "SSO_REQUIRED": "请前往 OurTaiko 账号中心管理账号。",
     "LOGIN_INVALID": "登录名或密码不正确。",
     "IDEMPOTENCY_CONFLICT": "此请求标识已用于不同内容，请重新提交。",

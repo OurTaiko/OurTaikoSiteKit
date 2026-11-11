@@ -50,8 +50,11 @@ export const endpoints = {
     ),
   /** Writes (PATCH, DELETE); reading a chart goes through chartDetail. */
   chart: chartPath,
-  /** GET /charts/{id} looks for the chart's number unless told by=id. */
-  chartDetail: (id: string) => withQuery(chartPath(id), { by: 'id' }),
+  /**
+   * GET /charts/{id} reads {id} as `by` says: the chart's ID, its number, or (Database) its
+   * Nijiiro ID. An empty `by` leaves it to the server: 32 hex digits are an ID, the rest a number.
+   */
+  chartDetail: (id: string, by = 'id') => withQuery(chartPath(id), by ? { by } : {}),
   collaborations: (id: string) => `${chartPath(id)}/collaborations`,
   collaboration: (id: string, invitation: string) =>
     `${chartPath(id)}/collaborations/${encodeURIComponent(invitation)}`,

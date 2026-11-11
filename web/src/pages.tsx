@@ -322,6 +322,9 @@ export function Detail() {
   const [replay, setReplay] = useState<ScoreReplay | null>(null)
   const [query, setQuery] = useSearchParams()
   const replayParam = query.get('replay') ?? ''
+  // /charts/{id}?by=number|nijiiro|id: links from other sites name a chart by what they know of
+  // it. Everything after the read goes by chart.id.
+  const by = query.get('by') ?? ''
   const loadedId = chart?.id ?? ''
   const showReplay = useCallback(
     (scoreId: string | null) => {
@@ -367,13 +370,13 @@ export function Detail() {
     setChosenCourse('')
     setReplay(null)
     if (!id) return
-    api<Chart>(endpoints.chartDetail(id), { signal: controller.signal })
+    api<Chart>(endpoints.chartDetail(id, by), { signal: controller.signal })
       .then(setChart)
       .catch((e) => {
         if (!controller.signal.aborted) setError(e.message)
       })
     return () => controller.abort()
-  }, [id])
+  }, [id, by])
   useEffect(() => {
     setSection(commentId || location.hash === '#comments' ? 'comments' : 'info')
   }, [id, commentId, location.hash])

@@ -411,6 +411,11 @@
     "uploadChartFiles": "譜面ファイルをアップロード",
     "chartsNav": "譜面を探す",
     "nijiiroId": "Nijiiro ID",
+    "nijiiroIdInvalid": "Nijiiro ID は正の整数で入力してください。",
+    "nijiiroIdChecking": "使用状況を確認しています…",
+    "nijiiroIdFree": "この Nijiiro ID は使用できます。",
+    "nijiiroIdUnknown": "現在確認できません。保存時にもう一度確認されます。",
+    "nijiiroIdTaken": "この Nijiiro ID はすでに使われています：",
     "officialId": "公式 ID"
   },
   "common": {
@@ -426,6 +431,7 @@
     "NOT_FOUND": "リソースが存在しないか、削除されています。",
     "REQUEST_INVALID": "リクエストが無効です。入力を確認してください。",
     "SERVICE_UNAVAILABLE": "サービスを一時的に利用できません。しばらくしてから再試行してください。",
+    "NIJIIRO_ID_TAKEN": "この Nijiiro ID はすでに他の譜面で使われています。",
     "SSO_REQUIRED": "OurTaiko アカウントセンターでアカウントを管理してください。",
     "LOGIN_INVALID": "ログイン名またはパスワードが正しくありません。",
     "IDEMPOTENCY_CONFLICT": "このリクエスト ID は別の内容に使用済みです。再送信してください。",

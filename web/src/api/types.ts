@@ -61,6 +61,8 @@ export type ChartBase = {
   id: string
   /** The chart's short number; GET /charts/{number} finds it too. */
   numberId: number
+  /** The official song's Nijiiro ID; each names one chart. Null or absent when none. */
+  nijiiroId?: number | null
   title: string
   subtitle: string
   titleTranslations: TitleTexts

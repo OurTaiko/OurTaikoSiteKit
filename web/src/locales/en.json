@@ -411,6 +411,11 @@
     "uploadChartFiles": "Upload chart files",
     "chartsNav": "Explore charts",
     "nijiiroId": "Nijiiro ID",
+    "nijiiroIdInvalid": "A Nijiiro ID is a positive whole number.",
+    "nijiiroIdChecking": "Checking whether it is in use…",
+    "nijiiroIdFree": "This Nijiiro ID is free.",
+    "nijiiroIdUnknown": "Could not check right now; it is checked again on save.",
+    "nijiiroIdTaken": "This Nijiiro ID is already used by",
     "officialId": "Official ID"
   },
   "common": {
@@ -428,6 +433,7 @@
     "NOT_FOUND": "The requested resource was not found or was removed.",
     "REQUEST_INVALID": "Invalid request. Check your input and retry.",
     "SERVICE_UNAVAILABLE": "Service temporarily unavailable. Please try again later.",
+    "NIJIIRO_ID_TAKEN": "This Nijiiro ID is already used by another chart.",
     "SSO_REQUIRED": "Manage your account in the OurTaiko account center.",
     "LOGIN_INVALID": "Incorrect username or password.",
     "IDEMPOTENCY_CONFLICT": "This request ID was used for different content. Submit again.",
