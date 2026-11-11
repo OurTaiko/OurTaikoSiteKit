@@ -333,12 +333,8 @@ export async function prepareTja(
  * A declared BGMOVIE needs its file, under the same name; a replacement may
  * keep the movie the chart already has.
  */
-export function validateMovie(metadata: Metadata, movie: File | null, hasStoredMovie = false) {
-  if (!movie) {
-    if (metadata.movie && !hasStoredMovie)
-      fail('TJA_MOVIE_MISSING', t('messages.movieFileRequired', { expected: metadata.movie }))
-    return
-  }
+export function validateMovie(metadata: Metadata, movie: File | null) {
+  if (!movie) return
   if (!metadata.movie) fail('UPLOAD_FILES_INVALID', t('messages.movieNotDeclared'))
   if (!safeFilename(movie.name) || !isMovieFilename(movie.name) || !movie.size)
     fail('UPLOAD_FILES_INVALID', t('messages.movieFileInvalid'))

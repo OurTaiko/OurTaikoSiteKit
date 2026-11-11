@@ -75,9 +75,8 @@ it('reads BGMOVIE and MOVIEOFFSET and matches the selected video to them', () =>
   }
   expect(code(() => validateMovie(declared, file('映像.mp4')))).toBe('')
   expect(code(() => validateMovie(plain, null))).toBe('')
-  expect(code(() => validateMovie(declared, null))).toBe('TJA_MOVIE_MISSING')
-  // A replacement keeps the movie the chart already has.
-  expect(code(() => validateMovie(declared, null, true))).toBe('')
+  // Declared without a file: published without the movie.
+  expect(() => validateMovie(declared, null)).not.toThrow()
   expect(code(() => validateMovie(declared, file('other.mp4')))).toBe('TJA_MOVIE_MISMATCH')
   expect(code(() => validateMovie(plain, file('映像.mp4')))).toBe('UPLOAD_FILES_INVALID')
   expect(code(() => validateMovie(parse('BGMOVIE:a.mov\n'), file('a.mov', 0)))).toBe(

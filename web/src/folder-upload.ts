@@ -164,9 +164,9 @@ async function readTja(file: File, folderAudio: File[]) {
  * Finds every TJA of a folder and, from its own folder, the files its headers name: WAVE's
  * audio, PREIMAGE's cover, BGIMAGE's background image and BGMOVIE's movie. Names match ignoring
  * case, as on the systems these folders come from, and a matched file takes the name its header
- * gives, which the upload checks. A chart takes no image its headers do not name. A missing
- * WAVE or BGMOVIE falls back to the folder's only file of that kind, so the form shows why it
- * does not match.
+ * gives, which the upload checks. A chart takes no image or movie its headers do not name, and
+ * is published without one that is missing. A missing WAVE falls back to the folder's only
+ * audio, so the form shows why it does not match.
  */
 export async function scanFolder(files: FolderFile[]): Promise<FolderChart[]> {
   const byPath = new Map<string, FolderFile>()
@@ -202,9 +202,7 @@ export async function scanFolder(files: FolderFile[]): Promise<FolderChart[]> {
       audio: find('WAVE', isAudioFilename) ?? only(audios),
       cover: find('PREIMAGE', isImageFilename),
       background: find('BGIMAGE', isImageFilename),
-      movie:
-        find('BGMOVIE', isMovieFilename) ??
-        (headers.BGMOVIE ? only(inFolder(dir, isMovieFilename)) : null),
+      movie: find('BGMOVIE', isMovieFilename),
       missing,
     })
   }

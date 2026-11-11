@@ -91,10 +91,12 @@ export function BatchUpload({
     void (async () => {
       for (const [index, chart] of charts.entries()) {
         const missing = (header: string) => chart.missing.find((m) => m.header === header)
-        // A missing image is published without; the list says so.
+        // A missing image or movie is published without; the list says so.
         const warning = chart.missing
-          .filter((m) => m.header === 'PREIMAGE' || m.header === 'BGIMAGE')
-          .map((m) => translate('folderUpload.missingImage', { header: m.header, value: m.value }))
+          .filter((m) => m.header !== 'WAVE')
+          .map((m) =>
+            translate('folderUpload.missingOptional', { header: m.header, value: m.value }),
+          )
           .join(' ')
         try {
           if (!chart.audio) {
