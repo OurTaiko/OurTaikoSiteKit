@@ -1,5 +1,8 @@
 # OurTaikoSiteKit
 
+> [!IMPORTANT]
+> Deprecated now. Please go to [OurTaikoNET Frontend](https://github.com/ourtaiko/ourtaikonetweb) and [OurTaikoNET Backend](https://github.com/ourtaiko/ourtaikonet)
+
 Code shared by the two OurTaiko chart sites, [Fanmade](https://github.com/OurTaiko/Fanmade) and [OurTaiko Database](https://github.com/OurTaiko/Database). Each site checks this repository out as the git submodule `kit/` and pins a commit; database migrations stay in the sites.
 
 - Go module `ourtaiko.dev/sitekit` (`audio`, `charthash`, `constants`, `cover`, `objectstore`, `tja`, `video`). `tja` is the TJA upload gate both sites run, and `web/src/tja.ts` the browser's copy of it; `contracts/validation.json` holds the cases both test against. `tja` and `charthash` read chart bodies with the TJAParser tool (`TJAPARSER_BIN`). A site requires it with `replace ourtaiko.dev/sitekit => ./kit`. Test here with `go test ./...`.
